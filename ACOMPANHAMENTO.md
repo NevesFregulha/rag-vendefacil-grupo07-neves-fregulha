@@ -1,9 +1,9 @@
 # Acompanhamento - Mini Desafio RAG VendeFácil
 
 **Integrante 1:** Nome Completo - [@usuario-github](https://github.com/usuario-github)
-**Integrante 2:** Nome Completo - [@usuario-github](https://github.com/usuario-github)
+**Integrante 2:** Ester Da Silva Antonio Nóbrega Neves - [@EsterNevess](https://github.com/EsterNevess)
 
-**Repositório:** `rag-vendefacil-<sobrenome1>-<sobrenome2>`
+**Repositório:** `rag-vendefacil-grupo07-neves-fregulha`
 
 ---
 
@@ -27,7 +27,7 @@
 
 ---
 
-## Encontro 1 - AAAA-MM-DD
+## Encontro 1 - 2026-08-24
 
 **Etapa:** 1 - Ingestão heterogênea, metadados e indexação vetorial
 
@@ -35,17 +35,21 @@
 
 <!-- Escreva você mesmo, em primeira pessoa. O que implementou, que decisão tomou e por quê, onde travou. -->
 
-### Relato individual - [Nome do Integrante 2]
+### Relato individual - [Ester da Silva Antonio Nóbrega Neves]
 
-<!-- Escreva você mesmo, em primeira pessoa. O que implementou, que decisão tomou e por quê, onde travou. -->
+<!-- Fiz a preparação do projeto junto com a Fernanda. Na minha máquina, acompanhei a criação e a ativação do ambiente virtual no Windows, além da instalação das bibliotecas que vamos usar no desafio. Conferimos o `pip check` e o ambiente ficou funcionando normalmente. Também exploramos a pasta `data` para entender os tipos de arquivo disponíveis e percebemos que cada formato vai precisar de um tratamento diferente na etapa de ingestão. Não começamos o código nesta aula, então combinamos de criar as pastas e iniciar o `src/ingest.py` no próximo encontro. Usamos o GitHub Copilot para entender os comandos e adaptar as instruções para o PowerShell. -->
 
 ### Resumo do dia (escrito em conjunto)
 
 **Entregamos hoje:**
--
+- Configuramos o ambiente virtual Python e instalamos as dependências iniciais do projeto.
+- Validamos o ambiente com `python` e `pip check`.
+- Exploramos a organização dos dados e identificamos os formatos que serão processados.
 
 **Ficou pendente:**
--
+- Criar as pastas e arquivos iniciais da aplicação.
+- Implementar os leitores e o chunking adaptativo para CSV, JSON, JSONL, Markdown, PDF e TXT.
+- Atualizar o arquivo de dependências para registrar as bibliotecas instaladas.
 
 **Bloqueios em aberto:**
 -

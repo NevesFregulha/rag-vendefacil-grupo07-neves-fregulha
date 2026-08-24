@@ -1,1 +1,8 @@
-# preencha com as dependencias do seu projeto
+langchain
+langchain-community
+langchain-text-splitters
+faiss-cpu
+pydantic
+pypdf
+rank-bm25
+python-dotenv
