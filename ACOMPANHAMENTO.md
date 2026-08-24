@@ -1,6 +1,6 @@
 # Acompanhamento - Mini Desafio RAG VendeFácil
 
-**Integrante 1:** Nome Completo - [@usuario-github](https://github.com/usuario-github)
+**Integrante 1:** Fernanda Fregulha - [@fregulha](https://github.com/fregulha)
 **Integrante 2:** Ester Da Silva Antonio Nóbrega Neves - [@EsterNevess](https://github.com/EsterNevess)
 
 **Repositório:** `rag-vendefacil-grupo07-neves-fregulha`
@@ -33,7 +33,7 @@
 
 ### Relato individual - [Nome do Integrante 1]
 
-<!-- Escreva você mesmo, em primeira pessoa. O que implementou, que decisão tomou e por quê, onde travou. -->
+Fiz, junto com a Ester, a configuração inicial do projeto no Windows. Criamos o ambiente virtual usando Python 3.14.4 e adaptamos os comandos do guia para funcionar no PowerShell, já que alguns estavam escritos para Linux. Depois instalamos as bibliotecas iniciais do RAG, como LangChain, FAISS, Pydantic, Pypdf, BM25 e python-dotenv, e rodamos o `pip check` para confirmar que estava tudo certo. Também exploramos as pastas da base e vimos que teremos arquivos CSV, JSON, JSONL, Markdown, PDF e TXT. Como essa aula ficou focada na preparação, deixamos a criação das pastas e do `src/ingest.py` para a próxima aula. Usei o GitHub Copilot para adaptar os comandos para o Windows e entender os próximos passos.
 
 ### Relato individual - [Ester da Silva Antonio Nóbrega Neves]
 
@@ -52,13 +52,13 @@
 - Atualizar o arquivo de dependências para registrar as bibliotecas instaladas.
 
 **Bloqueios em aberto:**
--
+- Não tivemos bloqueios durante a configuração do ambiente.
 
 **Próximo passo (início do encontro 2):**
--
+- Criar as pastas iniciais do projeto, atualizar o arquivo de dependências e começar o `src/ingest.py`, iniciando pelos leitores dos arquivos da base.
 
 **Uso de assistentes de IA:**
--
+- Utilizamos o GitHub Copilot para tirar dúvidas, entender os comandos e adaptar as instruções para o PowerShell do Windows. Também conferimos os resultados e validamos a instalação com `pip check`.
 
 ---
 
