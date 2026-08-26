@@ -72,7 +72,9 @@ Preparei a estrutura compartilhada do projeto em `src/`, `src/loaders/` e `tests
 
 ### Relato individual - Ester da Silva Antonio Nóbrega Neves
 
-> A Ester deve escrever aqui o próprio relato individual antes do encerramento da entrega.
+Acompanhei a preparação inicial do projeto e, nesta TASK 02, implementei a ingestão dos dados estruturados (CSV e JSON) da Etapa 1. Na minha máquina, criei a branch ester/loaders-estruturados e desenvolvi as funções em src/loaders/structured.py para ler os três arquivos CSV e os dois arquivos JSON (customers.csv, employees.csv, sales.csv, products.json e stores.json).
+Segui rigorosamente a regra de que cada registro equivale a um Document e um chunk, transformando as linhas e objetos em textos compreensíveis para o modelo de embeddings. Também apliquei o contrato de metadados obrigatórios (source_file, doc_type, chunk_id e sensitivity), gerando IDs únicos e estáveis.
+Para validar o código, criei os testes unitários em tests/test_structured.py, executando o pytest e obtendo 100% de aprovação. Por fim, realizei os commits separadamente, publiquei a branch no GitHub e abri o Pull Request (#3) para a main sem utilizar Squash and merge, preservando os commits individuais.
 
 ### Resumo do dia (escrito em conjunto)
 
