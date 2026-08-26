@@ -1,0 +1,22 @@
+# Credenciais e configurações locais
+.env
+.env.*
+!.env.example
+
+# Ambientes virtuais
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Índice vetorial gerado localmente
+index/
+
+# Editores e sistema operacional
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
