@@ -62,30 +62,41 @@ Fiz a preparação do projeto junto com a Fernanda. Na minha máquina, acompanhe
 
 ---
 
-## Encontro 2 - AAAA-MM-DD
+## Encontro 2 - 2026-08-26
 
-**Etapa:** 2 - Busca híbrida e filtragem por metadados
+**Etapa:** 1 - Ingestão heterogênea, metadados e indexação vetorial
 
-### Relato individual - [Nome do Integrante 1]
+### Relato individual - Fernanda Fregulha
 
-### Relato individual - [Nome do Integrante 2]
+Preparei a estrutura compartilhada do projeto em `src/`, `src/loaders/` e `tests/` e implementei em `src/metadata.py` o contrato comum dos metadados, com validação de `source_file`, `doc_type`, `chunk_id` e `sensitivity`, incluindo detecção de IDs duplicados. Depois implementei os loaders de JSONL, Markdown, PDF e TXT com chunking adaptativo: um ticket por chunk no JSONL, divisão por seção nos Markdown, divisão por página e parágrafo nos PDFs e separação de mensagens nos e-mails. Validei 203 chunks textuais e classifiquei como `restrito` cinco e-mails internos que continham credenciais. Criei testes automatizados para os metadados e loaders; os oito testes executados passaram. Também revisei a ingestão estruturada depois do merge e identifiquei que `products.json` e `stores.json` foram tratados como um objeto único e que `system_logs.csv` ainda não foi incluído, deixando 503 registros pendentes. Usei o Codex para gerar esqueletos, revisar os formatos reais da base e executar os testes; conferi os resultados, ajustei as estratégias de chunking e preservei loaders diferentes para cada natureza de documento.
+
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
+
+> A Ester deve escrever aqui o próprio relato individual antes do encerramento da entrega.
 
 ### Resumo do dia (escrito em conjunto)
 
 **Entregamos hoje:**
--
+- Estrutura inicial de `src/`, `src/loaders/` e `tests/`, com contrato e validação de metadados.
+- Loaders de JSONL, Markdown, PDF e TXT com chunking adaptativo, totalizando 203 chunks textuais validados.
+- Loader inicial de CSV e JSON, com 5.012 chunks estruturados atualmente carregados.
+- Testes automatizados de metadados, loaders textuais e ingestão estruturada.
+- Pull Requests das TASKS 01, 02 e 03 integrados à `main`, preservando os commits individuais.
 
 **Ficou pendente:**
--
+- Corrigir a leitura das listas internas de `products.json` e `stores.json`, que devem gerar 5 e 50 chunks, respectivamente.
+- Incluir os 450 registros de `data/semi_structured/system_logs.csv` com `doc_type="log"`.
+- Integrar todos os loaders em `src/ingest.py`, criar e persistir o índice FAISS e executar o script de sanidade.
+- Atualizar o `README.md` com as instruções e decisões da Etapa 1.
 
 **Bloqueios em aberto:**
--
+- A ingestão estruturada está 503 chunks abaixo do total esperado. Decidimos registrar a pendência e corrigi-la antes de gerar o índice FAISS.
 
-**Próximo passo (início do encontro 3):**
--
+**Próximo passo:**
+- Corrigir a ingestão de produtos, lojas e logs; em seguida, executar a TASK 04 para integrar os loaders, gerar o FAISS e validar as três perguntas de sanidade.
 
 **Uso de assistentes de IA:**
--
+- Utilizamos o Codex para orientar o fluxo de branches e Pull Requests, propor os esqueletos dos loaders, revisar os formatos reais dos arquivos e automatizar testes. As sugestões foram conferidas contra o corpus, e ajustamos manualmente as estratégias de chunking, os metadados e a classificação de sensibilidade. A revisão também permitiu identificar os 503 registros ainda ausentes da ingestão estruturada.
 
 ---
 
