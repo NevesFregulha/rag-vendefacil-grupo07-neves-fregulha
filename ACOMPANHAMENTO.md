@@ -35,7 +35,7 @@
 
 Fiz, junto com a Ester, a configuração inicial do projeto no Windows. Criamos o ambiente virtual usando Python 3.14.4 e adaptamos os comandos do guia para funcionar no PowerShell, já que alguns estavam escritos para Linux. Depois instalamos as bibliotecas iniciais do RAG, como LangChain, FAISS, Pydantic, Pypdf, BM25 e python-dotenv, e rodamos o `pip check` para confirmar que estava tudo certo. Também exploramos as pastas da base e vimos que teremos arquivos CSV, JSON, JSONL, Markdown, PDF e TXT. Como essa aula ficou focada na preparação, deixamos a criação das pastas e do `src/ingest.py` para a próxima aula. Usei o GitHub Copilot para adaptar os comandos para o Windows e entender os próximos passos.
 
-### Relato individual - [Ester da Silva Antonio Nóbrega Neves]
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
 
 Fiz a preparação do projeto junto com a Fernanda. Na minha máquina, acompanhei a criação e a ativação do ambiente virtual no Windows, além da instalação das bibliotecas que vamos usar no desafio. Conferimos o `pip check` e o ambiente ficou funcionando normalmente. Também exploramos a pasta `data` para entender os tipos de arquivo disponíveis e percebemos que cada formato vai precisar de um tratamento diferente na etapa de ingestão. Não começamos o código nesta aula, então combinamos de criar as pastas e iniciar o `src/ingest.py` no próximo encontro. Usamos o GitHub Copilot para entender os comandos e adaptar as instruções para o PowerShell.
 
