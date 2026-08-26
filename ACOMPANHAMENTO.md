@@ -62,24 +62,30 @@ Fiz a preparação do projeto junto com a Fernanda. Na minha máquina, acompanhe
 
 ---
 
-## Encontro 2 - AAAA-MM-DD
+## Encontro 2 - 2026-08-26
 
 **Etapa:** 2 - Busca híbrida e filtragem por metadados
 
 ### Relato individual - [Nome do Integrante 1]
 
-### Relato individual - [Nome do Integrante 2]
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
+
+Acompanhei a preparação inicial do projeto e, nesta TASK 02, implementei a ingestão dos dados estruturados (CSV e JSON) da Etapa 1. Na minha máquina, criei a branch ester/loaders-estruturados e desenvolvi as funções em src/loaders/structured.py para ler os três arquivos CSV e os dois arquivos JSON (customers.csv, employees.csv, sales.csv, products.json e stores.json).
+Segui rigorosamente a regra de que cada registro equivale a um Document e um chunk, transformando as linhas e objetos em textos compreensíveis para o modelo de embeddings. Também apliquei o contrato de metadados obrigatórios (source_file, doc_type, chunk_id e sensitivity), gerando IDs únicos e estáveis.
+Para validar o código, criei os testes unitários em tests/test_structured.py, executando o pytest e obtendo 100% de aprovação. Por fim, realizei os commits separadamente, publiquei a branch no GitHub e abri o Pull Request (#3) para a main sem utilizar Squash and merge, preservando os commits individuais.
 
 ### Resumo do dia (escrito em conjunto)
 
 **Entregamos hoje:**
--
+- Implementamos a ingestão de arquivos CSV e JSON em src/loaders/structured.py, garantindo a regra de um registro por chunk com textos otimizados para embeddings.
+- Aplicamos o contrato de metadados obrigatórios e geramos identificadores (chunk_id) únicos e estáveis.
+- Criamos e validamos os testes unitários em tests/test_structured.py, obtendo 100% de aprovação no pytest.
 
 **Ficou pendente:**
--
+- Integrar os loaders, criar o índice FAISS e executar a sanidade
 
 **Bloqueios em aberto:**
--
+- Não tivemos bloqueios durante a configuração do ambiente.
 
 **Próximo passo (início do encontro 3):**
 -
