@@ -1,104 +1,230 @@
-# Mini Desafio RAG - VendeFácil Knowledge Base
+# Mini Desafio RAG — VendeFácil Knowledge Base
 
-Bem-vindo ao **Mini Desafio RAG (Retrieval-Augmented Generation)** baseado no ecossistema da empresa fictícia **VendeFácil Tecnologia Ltda.**!
+Projeto desenvolvido para o Mini Desafio de Assistente RAG Corporativo da VendeFácil Tecnologia Ltda.
 
-Este repositório contém a bases de dados sintéticas multi-formato e orientações pedagógicas para a realização de um mini desafio prático projetado ser realizado em **duplas**.
+## Contexto
 
----
+A VendeFácil fornece soluções de automação comercial para pequenos e médios varejistas. O projeto constrói uma base de conhecimento capaz de processar fontes internas da empresa, recuperar informações relevantes e, nas próximas etapas, responder perguntas com evidências e proteção de dados.
 
-## Contexto do Negócio: VendeFácil Tecnologia Ltda.
+Os principais produtos da empresa são:
 
-A VendeFácil é uma empresa brasileira de tecnologia que fornece sistemas de gestão para pequenos e médios varejistas (supermercados, farmácias, lojas de vestuário, petshops, etc.). O portfólio da empresa é composto por 5 produtos principais:
+1. **VendeFácil PDV:** sistema de frente de caixa.
+2. **VendeFácil Estoque:** gestão de inventário e entrada de NF-e.
+3. **VendeFácil Loja:** e-commerce omnicanal e catálogo digital.
+4. **VendeFácil Analytics:** dashboards, DRE e curva ABC.
+5. **VendeFácil Pay:** pagamentos com TEF IP e PIX dinâmico.
 
-1. **VendeFácil PDV:** Sistema de frente de caixa com suporte a NFC-e, SAT e funcionamento offline.
-2. **VendeFácil Estoque:** Gestão de inventário multiloja, inventário cego, transferência entre filiais e entrada via XML de NF-e.
-3. **VendeFácil Loja:** Plataforma de e-commerce omnicanal e catálogo para WhatsApp/marketplaces.
-4. **VendeFácil Analytics:** Dashboards executivos, DRE gerencial e curva ABC de vendas.
-5. **VendeFácil Pay:** Solução de pagamento com TEF IP e PIX dinâmico integrado às maquininhas Pinpad.
+## Etapa 1 — Ingestão, metadados e índice FAISS
 
----
+Nesta etapa, implementamos:
 
+- ingestão de dados heterogêneos;
+- chunking adaptativo conforme a natureza de cada fonte;
+- metadados padronizados;
+- validação de `chunk_id` únicos;
+- criação e persistência de índice vetorial FAISS;
+- recarga do índice sem reindexar o corpus;
+- script de sanidade para verificar a recuperação vetorial.
 
+## Formatos processados
 
-## O Desafio
+| Formato | Fontes | Estratégia de chunking |
+|---|---|---|
+| CSV | clientes, funcionários e vendas | Um registro por chunk, serializado em texto legível |
+| JSON | produtos e lojas | Um objeto por chunk |
+| JSONL | tickets de suporte | Um ticket por chunk; quando necessário, divide apenas o corpo e repete o cabeçalho |
+| Markdown | manuais, documentação e atas | Divisão por cabeçalhos, com fallback por tamanho |
+| PDF | políticas internas | Divisão por página, parágrafos ou cláusulas com overlap |
+| TXT | e-mails | Divisão por mensagem do thread antes da divisão por tamanho |
+| CSV de logs | logs de sistema | Um log por chunk |
 
-O objetivo das duplas é **construir um Assistente de Inteligência Artificial para a Knowledge Base da VendeFácil**, capaz de:
+## Estrutura do projeto
 
-- Processar e indexar fontes de dados heterogêneas (CSV, JSON, JSONL, Markdown, PDF e TXT).
-- Executar busca híbrida (Embeddings + BM25) com **filtragem avançada por metadados** (ex: estado `MG`, módulo `estoque`, cliente `CUST001`).
-- Gerar respostas estritamente fundamentadas em fatos, com **saída estruturada em Pydantic** citando fontes e nível de confiança.
-- Aplicar **Guardrails e regras de segurança (LGPD)** para impedir o vazamento de informações sensíveis (salários de colaboradores, senhas/chaves de API) e reconhecer perguntas fora do escopo.
-- Avaliar o desempenho do sistema através do benchmark fornecido utilizando as métricas da **RAG Triad** (Relevância do Contexto, Relevância da Resposta e Groundedness).
-
----
-
-
-
-## Estrutura do Repositório
-
-```
-mini-desafio/
-├── data/                                 # Base de Conhecimento VendeFácil (Multi-formato)
-│   ├── structured/                       # CSV e JSON (employees, customers, products, stores)
-│   ├── semi_structured/                  # JSONL e CSV (tickets.jsonl, system_logs.csv)
-│   └── unstructured/                     # Documentação (.md), Políticas (.pdf/.md), Reuniões (.md), E-mails (.txt)
-esperadas
-├── starter/                              # Código de partida para os alunos
-│   ├── requirements.txt                  # Dependências Python recomendadas
-│   ├── schema.py                         # Estrutura Pydantic exigida para as respostas
-│   └── ingest_template.py                # Esqueleto didático do pipeline de ingestão
-└── docs/                                 # Documentação Didática
-
-
-```
-
----
-
-
-
-## Cronograma do Desafio
-
-
-| Aula        | Carga Horária | Tópico Principal                                | Entregável da Aula                                                                      |
-| ----------- | ------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **Etapa 1** | 4h            | **Ingestão Heterogênea, Metadados e Vector DB** | Pipeline de carregamento, chunking e indexação no FAISS/Qdrant com metadados extraídos. |
-| **Etapa 2** | 4h            | **Busca Híbrida e Filtragem por Metadados**     | Roteador de queries e buscador híbrido (Embeddings + BM25/Filtros).                     |
-| **Etapa 3** | 4h            | **Síntese Estruturada e Guardrails / LGPD**     | Pipeline LLM com saída Pydantic, citação de evidências e bloqueio de dados sensíveis.   |
-| **Etapa 4** | 4h            | **Avaliação (RAG Triad), UI e Defesa Técnica**  | Execução do benchmark, relatório de métricas e apresentação da dupla para a turma.      |
-
-
----
-
-
-
-## Início Rápido
-
-
-
-### 1. Pré-requisitos
-
-- Python 3.10+
-- Chave de API de LLM (OpenAI, Groq, OpenRouter ou ambiente Ollama local)
-
-
-
-### 2. Instalação das Dependências
-
-```bash
-# Clone ou acesse a pasta do repositório
-cd mini-desafio
-
-# Crie e ative um ambiente virtual
-python3 -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
-
-# Instale as dependências
-pip install -r starter/requirements.txt
+```text
+rag-vendefacil-grupo07-neves-fregulha/
+├── data/
+│   ├── structured/
+│   │   ├── customers.csv
+│   │   ├── employees.csv
+│   │   ├── products.json
+│   │   ├── sales.csv
+│   │   └── stores.json
+│   ├── semi_structured/
+│   │   ├── system_logs.csv
+│   │   └── tickets.jsonl
+│   └── unstructured/
+│       ├── documentation/
+│       ├── emails/
+│       ├── meetings/
+│       └── policies/
+├── src/
+│   ├── ingest.py
+│   ├── metadata.py
+│   ├── sanity_check.py
+│   ├── vectorstore.py
+│   └── loaders/
+│       ├── structured.py
+│       ├── log_loader.py
+│       ├── jsonl_loader.py
+│       ├── markdown_loader.py
+│       ├── pdf_loader.py
+│       └── text_loader.py
+├── tests/
+│   ├── test_structured.py
+│   ├── test_textual_loaders.py
+│   ├── test_log_loader.py
+│   ├── test_ingest.py
+│   └── test_vectorstore.py
+├── starter/
+│   └── requirements.txt
+└── README.md
 ```
 
+A pasta `index/` é gerada localmente durante a indexação e não é enviada ao Git, pois está no `.gitignore`.
 
+## Metadados
 
-### 3. Consultar o Guia Didático
+Todo chunk possui os seguintes campos obrigatórios:
 
-- [Guia Didático - Mini Desafio RAG VendeFácil](https://app.notion.com/p/IA-Generativa-RAG-3b3185f9f7ed806b8820ee5292611ee4)
+```python
+{
+    "source_file": "nome do arquivo de origem",
+    "doc_type": "tipo do documento",
+    "chunk_id": "identificador único e estável",
+    "sensitivity": "publico, interno ou restrito",
+}
+```
 
+Quando aplicável, também são usados campos como:
+
+```text
+customer_id, state, module, priority, status, date, section,
+timestamp, level, service, event e error_code.
+```
+
+Os tipos de documento presentes no corpus são:
+
+```text
+ata, customer, email, employee, log, manual, policy,
+product, sale, store e ticket
+```
+
+## Pré-requisitos da Etapa 1
+
+- Python 3.10 ou superior;
+- conexão com a internet na primeira indexação, para baixar o modelo local;
+- não é necessária chave de API nesta etapa.
+
+O projeto utiliza embeddings locais com o modelo multilíngue:
+
+```text
+sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+```
+
+A chave de API de um LLM será necessária nas etapas futuras, principalmente na Etapa 3, para gerar respostas estruturadas e aplicar guardrails de LGPD.
+
+## Instalação
+
+No PowerShell, dentro da pasta do repositório:
+
+```powershell
+py -m venv venv
+.\venv\Scripts\Activate.ps1
+.\venv\Scripts\python.exe -m pip install -r starter/requirements.txt
+```
+
+## Executar a ingestão
+
+O comando abaixo carrega e valida todas as fontes do corpus:
+
+```powershell
+.\venv\Scripts\python.exe -m src.ingest
+```
+
+Resultado esperado:
+
+```text
+Total de chunks: 5718
+```
+
+Distribuição esperada:
+
+| doc_type | Quantidade |
+|---|---:|
+| ata | 38 |
+| customer | 2000 |
+| email | 43 |
+| employee | 10 |
+| log | 450 |
+| manual | 24 |
+| policy | 23 |
+| product | 5 |
+| sale | 3000 |
+| store | 50 |
+| ticket | 75 |
+
+## Criar e persistir o índice FAISS
+
+Para vetorizar o corpus e salvar o índice em disco:
+
+```powershell
+.\venv\Scripts\python.exe -m src.vectorstore
+```
+
+Os arquivos do índice serão criados na pasta:
+
+```text
+index/
+├── index.faiss
+└── index.pkl
+```
+
+## Recarregar o índice sem reindexar
+
+Após criar o índice uma vez, ele pode ser recarregado sem processar novamente os arquivos:
+
+```powershell
+.\venv\Scripts\python.exe -c "from src.vectorstore import load_vectorstore; vectorstore = load_vectorstore(); print(f'Documentos no indice: {vectorstore.index.ntotal}')"
+```
+
+Resultado esperado:
+
+```text
+Documentos no indice: 5718
+```
+
+## Executar a sanidade do índice
+
+O script de sanidade imprime o total de chunks, a distribuição por `doc_type` e os cinco resultados mais similares para cada pergunta:
+
+```powershell
+.\venv\Scripts\python.exe -m src.sanity_check
+```
+
+Perguntas de teste:
+
+1. `Quais produtos a VendeFácil oferece?`
+2. `Quais lojas estão localizadas em Minas Gerais?`
+3. `Quais erros ocorreram no módulo de PDV?`
+
+A recuperação atual é vetorial. A busca híbrida e os filtros por metadados serão implementados na Etapa 2.
+
+## Testes
+
+Para executar todos os testes automatizados:
+
+```powershell
+.\venv\Scripts\python.exe -m pytest -q
+```
+
+Resultado validado ao final da Etapa 1:
+
+```text
+18 passed
+```
+
+## Próximas etapas
+
+- **Etapa 2:** busca híbrida e filtros por metadados;
+- **Etapa 3:** síntese estruturada com Pydantic e guardrails de LGPD;
+- **Etapa 4:** benchmark, relatório de falhas e interface de demonstração.
