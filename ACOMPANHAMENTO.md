@@ -102,13 +102,13 @@ Para validar o código, criei os testes unitários em tests/test_structured.py, 
 
 ---
 
-## Encontro 3 - AAAA-MM-DD
+## Encontro 3 - 2026-08-28
 
-**Etapa:** 3 - Síntese estruturada, evidência e guardrails de LGPD
+**Etapa:** 1 - Ingestão heterogênea, metadados e indexação vetorial
 
 ### Relato individual - [Nome do Integrante 1]
 
-### Relato individual - [Nome do Integrante 2]
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
 
 ### Resumo do dia (escrito em conjunto)
 
