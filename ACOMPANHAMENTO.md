@@ -106,26 +106,40 @@ Para validar o código, criei os testes unitários em tests/test_structured.py, 
 
 **Etapa:** 1 - Ingestão heterogênea, metadados e indexação vetorial
 
-### Relato individual - [Nome do Integrante 1]
-
 ### Relato individual - Ester da Silva Antonio Nóbrega Neves
+
+Assumi a TASK 04 neste encontro porque a Fernanda não pôde comparecer. Corrigi a ingestão de `products.json` e `stores.json` em `src/loaders/structured.py`, ajustando a leitura das listas internas para gerar um `Document` por registro. Validei que a ingestão passou a gerar 5 documentos de produto e 50 documentos de loja.
+Também criei `src/loaders/log_loader.py` para processar os 450 registros de `data/semi_structured/system_logs.csv`, com `doc_type="log"` e metadados filtráveis como `timestamp`, `level`, `service`, `module`, `customer_id`, `event` e `error_code`. Criei testes específicos para os logs e validei os 450 documentos gerados.
+Em seguida, integrei todos os loaders em `src/ingest.py`, incluindo dados estruturados, logs, tickets JSONL, Markdown, PDF e e-mails TXT. A ingestão completa totalizou 5.718 chunks e os metadados foram validados quanto aos campos obrigatórios e à unicidade dos `chunk_id`.
+Implementei em `src/vectorstore.py` a criação, persistência e recarga do índice FAISS usando embeddings locais multilíngues com o modelo `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`. O índice é salvo localmente e pode ser recarregado sem reprocessar o corpus. Também implementei `src/sanity_check.py`, que mostra o total de chunks, a distribuição por tipo de documento e os cinco resultados mais similares para três perguntas de teste.
+Por fim, atualizei o `README.md` para documentar a execução real da Etapa 1, incluindo instalação, estratégias de chunking, metadados, criação do índice, recarga e sanidade. Executei a suíte completa de testes com resultado de 18 testes aprovados. Usei o Codex para orientar a correção dos loaders, estruturar os testes, revisar os comandos e comparar a implementação com o guia do professor; conferi e executei localmente cada alteração e resultado antes de registrar no repositório.
 
 ### Resumo do dia (escrito em conjunto)
 
 **Entregamos hoje:**
--
+- Correção da ingestão de produtos, lojas e logs.
+- Integração de todos os loaders em `src/ingest.py`.
+- Validação do corpus completo com 5.718 chunks.
+- Criação, persistência e recarga do índice FAISS local.
+- Script de sanidade com distribuição por `doc_type` e três perguntas de teste.
+- Testes de logs, ingestão e FAISS.
+- Atualização do `README.md` com a documentação da Etapa 1.
+- Suíte completa validada com 18 testes aprovados.
+- TASK 04 e TASK 05 integradas à `main` por Pull Requests, sem squash.
 
 **Ficou pendente:**
--
+- Iniciar a Etapa 2: analisador de perguntas, filtros por metadados, busca BM25 e busca híbrida.
 
 **Bloqueios em aberto:**
--
+- Não houve bloqueio técnico na conclusão da Etapa 1.
+- Durante a leitura dos PDFs, o `pypdf` exibiu avisos sobre referências internas (`startxref`), mas os documentos foram processados normalmente.
+- O `langchain-community` exibiu aviso de descontinuação futura, sem impactar a execução atual.
 
 **Próximo passo (início do encontro 4):**
--
+- Criar a branch da Etapa 2 e iniciar a TASK 01: analisador da pergunta e extração de filtros por `state`, `module`, `customer_id` e `priority`.
 
 **Uso de assistentes de IA:**
--
+- Utilizei o Codex para revisar a estrutura do projeto, identificar a causa da ingestão incorreta de produtos e lojas, orientar a criação do loader de logs, estruturar a integração com FAISS, elaborar os testes e revisar a documentação. As sugestões foram conferidas manualmente contra os arquivos do corpus, a saída dos scripts e os resultados da suíte de testes.
 
 ---
 
