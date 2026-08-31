@@ -145,9 +145,11 @@ Por fim, atualizei o `README.md` para documentar a execução real da Etapa 1, i
 
 ## Encontro 4 - 2026-08-31
 
-**Etapa:** 4 - Avaliação (RAG Triad), interface e relatório
+**Etapa:** 2 - Busca híbrida e filtragem por metadados
 
-### Relato individual - [Nome do Integrante 1]
+### Relato individual - Fernanda Fregulha
+
+Neste encontro, revisei as tasks concluídas na Etapa 1 para retomar o contexto da implementação e compreender como os loaders, os metadados e o índice FAISS foram estruturados. Também revisei a organização das tasks da Etapa 2 e usei o dia para me alinhar com a Ester sobre o que já havia sido desenvolvido no analisador de perguntas. Em conjunto, planejamos os próximos passos da etapa, considerando as dependências entre a extração de filtros, o retriever FAISS, o índice BM25, a busca híbrida e os testes de integração. Usei assistentes de IA para revisar alguns conteúdos da atividade e analisar possibilidades de divisão e sequenciamento das próximas tarefas.
 
 ### Relato individual - Ester da Silva Antonio Nóbrega Neves
 
@@ -157,19 +159,22 @@ Resolvi não mapear "loja" isolada e só reconhecer combinações inequívocas c
 ### Resumo do dia (escrito em conjunto)
 
 **Entregamos hoje:**
-- 
+- Concluímos a TASK 01 da Etapa 2: analisador da pergunta e extração dos filtros `state`, `module`, `customer_id` e `priority`.
+- Revisamos os valores reais dos metadados, definimos regras de normalização e sinônimos e validamos o analisador com testes automatizados.
+- Revisamos as entregas anteriores e realizamos ajustes e alinhamentos sobre a integração das próximas partes da Etapa 2.
+- Planejamos a sequência de implementação do retriever FAISS com filtros, do índice BM25, da busca híbrida e dos testes de sanidade.
 
 **Ficou pendente:**
--
+- Concluir as demais tasks da Etapa 2: retriever FAISS com filtros por metadados, índice BM25, combinação com a busca vetorial, integração, testes, consultas de sanidade, documentação e relatos individuais.
 
 **Bloqueios em aberto:**
--
+- Não tivemos bloqueios neste encontro.
 
 **Preparação para o Demo Day:**
--
+- A preparação ainda está em fase de construção, acompanhando a evolução das próximas etapas do projeto.
 
 **Uso de assistentes de IA:**
--
+- Utilizamos assistentes de IA para revisar alguns conteúdos da atividade, analisar possibilidades de implementação e apoiar o planejamento das próximas tasks. As sugestões foram discutidas e conferidas pela dupla antes de serem incorporadas ao trabalho.
 
 ---
 
