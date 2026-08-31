@@ -143,18 +143,21 @@ Por fim, atualizei o `README.md` para documentar a execução real da Etapa 1, i
 
 ---
 
-## Encontro 4 - AAAA-MM-DD
+## Encontro 4 - 2026-08-31
 
 **Etapa:** 4 - Avaliação (RAG Triad), interface e relatório
 
 ### Relato individual - [Nome do Integrante 1]
 
-### Relato individual - [Nome do Integrante 2]
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
+
+Iniciei a Etapa 2 neste encontro com a TASK 01: o analisador de perguntas e a extração de filtros. Criei a branch ester/analisador-perguntas e implementei em src/query_analyzer.py a função extract_filters(), que reconhece os quatro filtros de metadados a partir de uma pergunta em texto livre: state, module, customer_id e priority. Antes de escrever o código, explorei os valores reais gravados nos metadados pelos loaders da Etapa 1 (customers.csv, stores.json, tickets.jsonl e system_logs.csv) para não inventar formatos que não existem no corpus: os estados aparecem como sigla (ex: MG, SP), os módulos como pdv, estoque, ecommerce, analytics e pay, e a prioridade dos tickets como Alta, Média, Baixa ou Crítica. Para o estado, o analisador reconhece tanto a sigla quanto o nome completo (ex: "Minas Gerais" vira MG); para o módulo, mapeei sinônimos que uma pergunta real usaria, como "frente de caixa" e "ponto de venda" para pdv. 
+Resolvi não mapear "loja" isolada e só reconhecer combinações inequívocas como "loja online" e "e-commerce". Também tratei prioridade e nomes de estado com e sem acento (ex: "critica"/"crítica"), e o customer_id com um regex que aceita o padrão CUSTxxx em qualquer capitalização. Criei 11 testes em tests/test_query_analyzer.py, cobrindo cada filtro isolado, a combinação de vários filtros na mesma pergunta e o caso sem nenhum filtro reconhecido. Executei a suíte completa e obtive 29 testes aprovados (18 da Etapa 1 mais os 11 novos), sem quebrar nada da ingestão ou do índice FAISS já existentes. 
 
 ### Resumo do dia (escrito em conjunto)
 
 **Entregamos hoje:**
--
+- 
 
 **Ficou pendente:**
 -
