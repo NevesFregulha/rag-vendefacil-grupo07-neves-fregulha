@@ -1,0 +1,66 @@
+"""Testes do analisador de perguntas e extração de filtros."""
+
+import unittest
+
+from src.query_analyzer import extract_filters
+
+
+class QueryAnalyzerTests(unittest.TestCase):
+    def test_extracts_state_from_full_name(self) -> None:
+        filters = extract_filters("Quais lojas estão localizadas em Minas Gerais?")
+        self.assertEqual(filters, {"state": "MG"})
+
+    def test_extracts_state_from_uf(self) -> None:
+        filters = extract_filters("Existem tickets abertos no estado de SP?")
+        self.assertEqual(filters["state"], "SP")
+
+    def test_extracts_module_from_synonym(self) -> None:
+        filters = extract_filters("Quais erros ocorreram no módulo de PDV?")
+        self.assertEqual(filters["module"], "pdv")
+
+    def test_extracts_module_ecommerce_synonym(self) -> None:
+        filters = extract_filters("Teve algum problema na loja online dos clientes?")
+        self.assertEqual(filters["module"], "ecommerce")
+
+    def test_extracts_customer_id(self) -> None:
+        filters = extract_filters("Quais tickets o cliente CUST001 abriu?")
+        self.assertEqual(filters["customer_id"], "CUST001")
+
+    def test_extracts_customer_id_case_insensitive(self) -> None:
+        filters = extract_filters("Histórico do cliente cust0042")
+        self.assertEqual(filters["customer_id"], "CUST0042")
+
+    def test_extracts_priority_with_accent_variation(self) -> None:
+        filters = extract_filters("Quais tickets tem prioridade critica?")
+        self.assertEqual(filters["priority"], "Crítica")
+
+    def test_extracts_priority_media(self) -> None:
+        filters = extract_filters("Liste os chamados de prioridade média")
+        self.assertEqual(filters["priority"], "Média")
+
+    def test_extracts_multiple_filters_together(self) -> None:
+        filters = extract_filters(
+            "Quais tickets de prioridade alta do módulo de estoque em Minas Gerais "
+            "para o cliente CUST010?"
+        )
+        self.assertEqual(
+            filters,
+            {
+                "state": "MG",
+                "module": "estoque",
+                "customer_id": "CUST010",
+                "priority": "Alta",
+            },
+        )
+
+    def test_returns_empty_dict_when_no_filters_found(self) -> None:
+        filters = extract_filters("Quais produtos a VendeFácil oferece?")
+        self.assertEqual(filters, {})
+
+    def test_returns_empty_dict_for_blank_question(self) -> None:
+        self.assertEqual(extract_filters(""), {})
+        self.assertEqual(extract_filters("   "), {})
+
+
+if __name__ == "__main__":
+    unittest.main()
