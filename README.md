@@ -207,7 +207,43 @@ Perguntas de teste:
 2. `Quais lojas estão localizadas em Minas Gerais?`
 3. `Quais erros ocorreram no módulo de PDV?`
 
-A recuperação atual é vetorial. A busca híbrida e os filtros por metadados serão implementados na Etapa 2.
+A recuperação híbrida e os filtros por metadados são implementados na Etapa 2.
+
+## Etapa 2 — Busca híbrida e filtros por metadados
+
+A recuperação em `src/retrieve.py` segue este fluxo:
+
+1. o Query Analyzer baseado em regras extrai `state`, `module`, `customer_id` e `priority`;
+2. os filtros são normalizados e validados contra os valores realmente presentes no índice;
+3. o FAISS recupera um conjunto ampliado (`fetch_k=500`) antes de aplicar o filtro;
+4. o BM25Plus busca termos exatos no corpus pré-filtrado;
+5. os rankings denso e esparso são combinados por Reciprocal Rank Fusion (RRF), com `k=60`.
+
+Escolhemos o Query Analyzer por regras porque o vocabulário de filtros do corpus é fechado e pequeno. A abordagem é determinística, não exige chave de API e impede que valores inventados sejam enviados ao FAISS. A contrapartida é ampliar explicitamente o dicionário de sinônimos quando surgir um novo modo de formular a pergunta.
+
+Não somamos os scores do FAISS e do BM25, pois eles possuem escalas diferentes. O RRF usa somente as posições nos rankings:
+
+```text
+score_RRF(documento) = soma(1 / (60 + posição_no_ranking))
+```
+
+O BM25 é especialmente útil para códigos de erro, IDs e nomes exatos. A busca densa é mais adequada para paráfrases e sinônimos; a fusão preserva as duas capacidades.
+
+### Executar o comparativo com e sem filtro
+
+Crie o índice conforme a Etapa 1 e execute:
+
+```powershell
+.\venv\Scripts\python.exe -m src.retrieval_check
+```
+
+O script imprime resultados lado a lado para três perguntas específicas por estado e módulo:
+
+1. `Quais tickets de Minas Gerais estao relacionados ao modulo de estoque?`
+2. `Quais tickets de Sao Paulo estao relacionados ao modulo de PDV?`
+3. `Quais tickets do Rio de Janeiro estao relacionados ao modulo pay?`
+
+Cada linha mostra `chunk_id`, arquivo de origem, estado, módulo e uma prévia do conteúdo. A coluna filtrada deve conter somente documentos que satisfaçam simultaneamente os metadados extraídos.
 
 ## Testes
 
@@ -217,14 +253,13 @@ Para executar todos os testes automatizados:
 .\venv\Scripts\python.exe -m pytest -q
 ```
 
-Resultado validado ao final da Etapa 1:
+Resultado esperado após a Etapa 2:
 
 ```text
-18 passed
+36 passed, 2 skipped
 ```
 
 ## Próximas etapas
 
-- **Etapa 2:** busca híbrida e filtros por metadados;
 - **Etapa 3:** síntese estruturada com Pydantic e guardrails de LGPD;
 - **Etapa 4:** benchmark, relatório de falhas e interface de demonstração.

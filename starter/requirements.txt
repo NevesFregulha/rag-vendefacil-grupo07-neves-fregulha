@@ -8,3 +8,4 @@ pypdf
 rank-bm25
 python-dotenv
 sentence-transformers
+pytest
