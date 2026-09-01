@@ -4,7 +4,13 @@ import unittest
 
 from langchain_core.documents import Document
 
-from src.retrieve import dense_search, matches_filters
+from src.retrieve import (
+    bm25_search,
+    dense_search,
+    hybrid_search,
+    matches_filters,
+    reciprocal_rank_fusion,
+)
 
 
 class _FakeDocstore:
@@ -47,6 +53,35 @@ class DenseRetrieverTests(unittest.TestCase):
         store = _FakeVectorstore(self.documents)
         dense_search(store, "consulta", filters={"state": "AC"})
         self.assertIsNone(store.last_call[1]["filter"])
+
+
+class HybridRetrieverTests(unittest.TestCase):
+    def setUp(self):
+        self.documents = [
+            Document(page_content="Falha generica no pagamento", metadata={"chunk_id": "dense", "state": "MG"}),
+            Document(page_content="Erro E-PDV-042 no caixa", metadata={"chunk_id": "exact", "state": "MG"}),
+            Document(page_content="Erro E-PDV-042 fora do estado", metadata={"chunk_id": "sp", "state": "SP"}),
+        ]
+
+    def test_bm25_finds_exact_error_code_and_prefilters(self):
+        result = bm25_search(
+            self.documents, "E-PDV-042", k=2, filters={"state": "MG"}
+        )
+        self.assertEqual(result[0].metadata["chunk_id"], "exact")
+        self.assertTrue(all(doc.metadata["state"] == "MG" for doc in result))
+
+    def test_rrf_rewards_document_present_in_both_rankings(self):
+        first, second, third = self.documents
+        result = reciprocal_rank_fusion([[first, second], [second, third]], limit=3)
+        self.assertEqual(result[0].metadata["chunk_id"], "exact")
+
+    def test_hybrid_search_returns_fused_ranking(self):
+        store = _FakeVectorstore(self.documents)
+        result = hybrid_search(store, "E-PDV-042 em MG", k=2)
+        self.assertEqual(
+            {doc.metadata["chunk_id"] for doc in result}, {"dense", "exact"}
+        )
+        self.assertTrue(all(doc.metadata["state"] == "MG" for doc in result))
 
 
 if __name__ == "__main__":

@@ -4,8 +4,11 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from typing import Any
+import re
+import unicodedata
 
 from langchain_core.documents import Document
+from rank_bm25 import BM25Plus
 
 from src.query_analyzer import extract_filters, metadata_vocabulary, validate_filters
 
@@ -56,4 +59,99 @@ def dense_search(
         k=k,
         fetch_k=max(fetch_k, k),
         filter=search_filter,
+    )
+
+
+def tokenize(text: str) -> list[str]:
+    """Normaliza texto em tokens adequados ao BM25 em portugues."""
+    normalized = unicodedata.normalize("NFKD", text.casefold())
+    without_accents = "".join(char for char in normalized if not unicodedata.combining(char))
+    return re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", without_accents)
+
+
+def bm25_search(
+    documents: Iterable[Document],
+    question: str,
+    *,
+    k: int = 5,
+    filters: Mapping[str, str] | None = None,
+) -> list[Document]:
+    """Executa busca esparsa, pre-filtrando o corpus quando necessario."""
+    if k < 1:
+        raise ValueError("Use k >= 1.")
+    corpus = list(documents)
+    selected_filters = (
+        validate_filters(filters, metadata_vocabulary(corpus)) if filters else {}
+    )
+    if selected_filters:
+        corpus = [document for document in corpus if matches_filters(document, selected_filters)]
+    if not corpus:
+        return []
+
+    tokenized_corpus = [tokenize(document.page_content) for document in corpus]
+    # BM25Plus evita IDF zero em subconjuntos pequenos gerados por filtros.
+    bm25 = BM25Plus(tokenized_corpus)
+    scores = bm25.get_scores(tokenize(question))
+    ranking = sorted(range(len(corpus)), key=lambda index: (-scores[index], index))
+    return [corpus[index] for index in ranking[:k]]
+
+
+def reciprocal_rank_fusion(
+    rankings: Iterable[Iterable[Document]],
+    *,
+    k: int = 60,
+    limit: int = 5,
+) -> list[Document]:
+    """Funde rankings incomparaveis pela posicao, usando RRF."""
+    scores: dict[str, float] = {}
+    documents: dict[str, Document] = {}
+    first_seen: dict[str, int] = {}
+    order = 0
+    for ranking in rankings:
+        seen_in_ranking: set[str] = set()
+        for rank, document in enumerate(ranking, start=1):
+            chunk_id = str(document.metadata.get("chunk_id", id(document)))
+            if chunk_id in seen_in_ranking:
+                continue
+            seen_in_ranking.add(chunk_id)
+            documents[chunk_id] = document
+            first_seen.setdefault(chunk_id, order)
+            order += 1
+            scores[chunk_id] = scores.get(chunk_id, 0.0) + 1 / (k + rank)
+    ordered_ids = sorted(scores, key=lambda item: (-scores[item], first_seen[item]))
+    return [documents[chunk_id] for chunk_id in ordered_ids[:limit]]
+
+
+def hybrid_search(
+    vectorstore: Any,
+    question: str,
+    *,
+    k: int = 5,
+    fetch_k: int = 500,
+    filters: Mapping[str, str] | None = None,
+    rrf_k: int = 60,
+) -> list[Document]:
+    """Combina resultados densos e BM25 com Reciprocal Rank Fusion."""
+    documents = documents_from_vectorstore(vectorstore)
+    selected_filters = (
+        validate_filters(filters, metadata_vocabulary(documents))
+        if filters is not None
+        else analyze_query(question, documents)
+    )
+    candidate_k = max(k * 4, k)
+    dense_results = dense_search(
+        vectorstore,
+        question,
+        k=candidate_k,
+        fetch_k=max(fetch_k, candidate_k),
+        filters=selected_filters,
+    )
+    sparse_results = bm25_search(
+        documents,
+        question,
+        k=candidate_k,
+        filters=selected_filters,
+    )
+    return reciprocal_rank_fusion(
+        [dense_results, sparse_results], k=rrf_k, limit=k
     )
