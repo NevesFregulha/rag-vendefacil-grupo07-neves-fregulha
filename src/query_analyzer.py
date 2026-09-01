@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable, Mapping
+from typing import Any
 
 FILTER_FIELDS = ("state", "module", "customer_id", "priority")
 
@@ -152,3 +154,44 @@ def extract_filters(question: str) -> dict[str, str]:
         filters["priority"] = priority
 
     return filters
+
+
+def metadata_vocabulary(
+    documents: Iterable[Any],
+    fields: Iterable[str] = FILTER_FIELDS,
+) -> dict[str, set[str]]:
+    """Coleta os valores realmente existentes para cada campo filtravel."""
+    vocabulary = {field: set() for field in fields}
+    for document in documents:
+        metadata = getattr(document, "metadata", {})
+        if not isinstance(metadata, Mapping):
+            continue
+        for field in vocabulary:
+            value = metadata.get(field)
+            if value is not None and str(value).strip():
+                vocabulary[field].add(str(value).strip())
+    return vocabulary
+
+
+def validate_filters(
+    filters: Mapping[str, str],
+    vocabulary: Mapping[str, set[str]],
+) -> dict[str, str]:
+    """Mantem apenas filtros cujo campo e valor existem no corpus indexado."""
+    validated: dict[str, str] = {}
+    for field, value in filters.items():
+        if field not in FILTER_FIELDS:
+            continue
+        allowed_values = vocabulary.get(field, set())
+        match = next(
+            (
+                candidate
+                for candidate in allowed_values
+                if _strip_accents(candidate.casefold())
+                == _strip_accents(str(value).strip().casefold())
+            ),
+            None,
+        )
+        if match is not None:
+            validated[field] = match
+    return validated

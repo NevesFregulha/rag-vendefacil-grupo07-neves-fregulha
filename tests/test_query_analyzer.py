@@ -2,7 +2,9 @@
 
 import unittest
 
-from src.query_analyzer import extract_filters
+from langchain_core.documents import Document
+
+from src.query_analyzer import extract_filters, metadata_vocabulary, validate_filters
 
 
 class QueryAnalyzerTests(unittest.TestCase):
@@ -60,6 +62,20 @@ class QueryAnalyzerTests(unittest.TestCase):
     def test_returns_empty_dict_for_blank_question(self) -> None:
         self.assertEqual(extract_filters(""), {})
         self.assertEqual(extract_filters("   "), {})
+
+    def test_validates_filters_against_corpus_values(self) -> None:
+        documents = [
+            Document(page_content="ticket", metadata={"state": "MG", "module": "estoque"})
+        ]
+        vocabulary = metadata_vocabulary(documents)
+        self.assertEqual(
+            validate_filters({"state": "mg", "module": "Estoque"}, vocabulary),
+            {"state": "MG", "module": "estoque"},
+        )
+
+    def test_discards_value_absent_from_corpus(self) -> None:
+        vocabulary = {"state": {"MG"}}
+        self.assertEqual(validate_filters({"state": "AC"}, vocabulary), {})
 
 
 if __name__ == "__main__":
