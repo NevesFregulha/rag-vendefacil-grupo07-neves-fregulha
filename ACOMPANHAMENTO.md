@@ -178,4 +178,40 @@ Resolvi não mapear "loja" isolada e só reconhecer combinações inequívocas c
 
 ---
 
+## Atividade extra - 2026-09-01
+
+**Etapa:** 2 - Busca híbrida e filtragem por metadados
+
+### Relato individual - Fernanda Fregulha
+
+Hoje fiquei online para trabalhar no projeto e compensar minha ausência na sexta-feira passada, quando a Ester precisou atuar sozinha. Retomei o estado da Etapa 2 e concluí as TASKS 02, 03, 04 e 05. Implementei o retriever FAISS com filtros de metadados validados contra os valores reais do corpus e configurei `fetch_k=500` para evitar resultados vazios em filtros seletivos. Em seguida, implementei a busca esparsa com BM25Plus e combinei seus resultados com a busca vetorial por Reciprocal Rank Fusion, usando `k=60` para não somar scores de escalas diferentes.
+
+Também integrei o fluxo completo do Query Analyzer até a busca híbrida, criei testes para os filtros, BM25, RRF e consultas por estado e módulo e implementei um comparativo lado a lado entre resultados com e sem filtro. Por fim, revisei e atualizei o `README.md` com as decisões técnicas, instruções de execução e os próximos passos. A suíte terminou com 36 testes aprovados e 2 ignorados porque dependem do índice FAISS local, que não é versionado. Usei o Codex para apoiar a implementação, revisar o código, estruturar os testes e atualizar a documentação; conferi as alterações e os resultados da suíte antes de finalizar.
+
+### Resumo do dia
+
+**Entreguei hoje:**
+- TASK 02: retriever FAISS com filtros por metadados validados e `fetch_k` dimensionado.
+- TASK 03: índice BM25Plus e busca híbrida Dense + BM25 com fusão RRF.
+- TASK 04: integração do pipeline, testes automatizados e comparativo de três consultas com e sem filtro.
+- TASK 05: revisão da entrega, atualização das dependências e documentação da Etapa 2 no `README.md`.
+
+**Tasks para a próxima etapa — Etapa 3:**
+- Criar os modelos Pydantic `SourceEvidence` e `RAGResponse`, usando `Literal` nos campos de valores fechados.
+- Implementar o validador de consistência entre `is_refusal`, `sources_used`, `confidence_level` e `refusal_reason`.
+- Integrar a geração de respostas estruturadas ao pipeline RAG, tratando falhas de validação com retry.
+- Garantir que toda resposta não recusada cite `filepath`, `chunk_id` e um trecho literal de evidência.
+- Implementar a política de LGPD nos níveis recusar, mascarar e responder.
+- Criar testes com pelo menos duas perguntas para cada nível da política de LGPD.
+- Implementar e testar a recusa de perguntas fora do escopo da VendeFácil.
+- Documentar no `README.md` a política de LGPD e as decisões adotadas.
+
+**Bloqueios em aberto:**
+- Não tive bloqueios durante as atividades de hoje.
+
+**Próximo passo:**
+- Iniciar a Etapa 3 pela criação dos schemas Pydantic e do validador de consistência da resposta estruturada.
+
+---
+
 *TIC em Trilhas · PUC-Rio · Instituto ECOA · MCTI Futuro · Softex*

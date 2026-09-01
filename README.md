@@ -262,4 +262,12 @@ Resultado esperado após a Etapa 2:
 ## Próximas etapas
 
 - **Etapa 3:** síntese estruturada com Pydantic e guardrails de LGPD;
+  - criar `SourceEvidence` e `RAGResponse` com campos fechados por `Literal`;
+  - validar a consistência entre recusa, confiança, motivo e fontes utilizadas;
+  - integrar a geração estruturada com retry em falhas de validação;
+  - exigir `filepath`, `chunk_id` e trecho literal em toda resposta não recusada;
+  - implementar os níveis de LGPD: recusar, mascarar e responder;
+  - testar pelo menos duas perguntas de cada nível de LGPD;
+  - recusar perguntas fora do escopo da VendeFácil;
+  - documentar a política de LGPD e as decisões adotadas.
 - **Etapa 4:** benchmark, relatório de falhas e interface de demonstração.
