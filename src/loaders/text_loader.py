@@ -13,7 +13,9 @@ from src.metadata import build_metadata
 
 MESSAGE_START = re.compile(r"(?=^De:\s*)", flags=re.MULTILINE | re.IGNORECASE)
 RESTRICTED_PATTERNS = re.compile(
-    r"\b(senha|credencia(?:l|is)|chave\s+(?:de\s+)?api|token|cpf|pix|dados\s+bancários)\b",
+    r"\b(senha|password|credencia(?:l|is)|chaves?\s+(?:secreta\s+)?(?:da\s+|de\s+)?api|"
+    r"api[_\s-]?key|secret\s*(?:access\s*)?key|sk_live|pk_live|jwt\s+secret|"
+    r"access\s+key|postgresql://|token|cpf|dados\s+bancários)\b",
     flags=re.IGNORECASE,
 )
 CUSTOMER_ID_PATTERN = re.compile(r"\bCUST\d+\b", flags=re.IGNORECASE)
@@ -26,7 +28,9 @@ def _split_messages(text: str) -> list[str]:
 
 
 def _sensitivity(path: Path, message: str) -> str:
-    if path.stem.lower().startswith("internal_") and RESTRICTED_PATTERNS.search(message):
+    # O nivel depende do conteudo, nao de quem enviou o e-mail: clientes tambem
+    # podem encaminhar senhas, credenciais e outros dados restritos.
+    if RESTRICTED_PATTERNS.search(message):
         return "restrito"
     return "interno"
 

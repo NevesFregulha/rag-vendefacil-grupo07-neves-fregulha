@@ -19,8 +19,8 @@ def _result_line(document: Document) -> str:
     metadata = document.metadata
     preview = " ".join(document.page_content.split())[:120]
     return (
-        f"- {metadata.get('chunk_id')} | {metadata.get('source_file')} | "
-        f"state={metadata.get('state', '-')} | module={metadata.get('module', '-')} | "
+        f"{metadata.get('chunk_id')}; {metadata.get('source_file')}; "
+        f"state={metadata.get('state', '-')}; module={metadata.get('module', '-')}; "
         f"{preview}"
     )
 

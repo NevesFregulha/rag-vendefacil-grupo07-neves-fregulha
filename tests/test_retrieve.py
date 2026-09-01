@@ -38,29 +38,33 @@ class _FakeVectorstore:
 class DenseRetrieverTests(unittest.TestCase):
     def setUp(self):
         self.documents = [
-            Document(page_content="MG estoque", metadata={"state": "MG", "module": "estoque"}),
-            Document(page_content="SP estoque", metadata={"state": "SP", "module": "estoque"}),
+            Document(page_content="MG estoque", metadata={"doc_type": "ticket", "state": "MG", "module": "estoque"}),
+            Document(page_content="SP estoque", metadata={"doc_type": "ticket", "state": "SP", "module": "estoque"}),
         ]
 
     def test_applies_analyzed_filter_and_fetch_k(self):
         store = _FakeVectorstore(self.documents)
         result = dense_search(store, "tickets de Minas Gerais sobre estoque", k=1, fetch_k=500)
         self.assertEqual(result[0].page_content, "MG estoque")
-        self.assertEqual(store.last_call[1]["filter"], {"state": "MG", "module": "estoque"})
+        self.assertEqual(
+            store.last_call[1]["filter"],
+            {"doc_type": "ticket", "state": "MG", "module": "estoque"},
+        )
         self.assertEqual(store.last_call[1]["fetch_k"], 500)
 
     def test_ignores_filter_value_that_does_not_exist(self):
         store = _FakeVectorstore(self.documents)
-        dense_search(store, "consulta", filters={"state": "AC"})
-        self.assertIsNone(store.last_call[1]["filter"])
+        result = dense_search(store, "consulta", filters={"state": "AC"})
+        self.assertEqual(result, [])
+        self.assertIsNone(store.last_call)
 
 
 class HybridRetrieverTests(unittest.TestCase):
     def setUp(self):
         self.documents = [
-            Document(page_content="Falha generica no pagamento", metadata={"chunk_id": "dense", "state": "MG"}),
-            Document(page_content="Erro E-PDV-042 no caixa", metadata={"chunk_id": "exact", "state": "MG"}),
-            Document(page_content="Erro E-PDV-042 fora do estado", metadata={"chunk_id": "sp", "state": "SP"}),
+            Document(page_content="Falha generica no pagamento", metadata={"chunk_id": "dense", "state": "MG", "module": "pdv"}),
+            Document(page_content="Erro E-PDV-042 no caixa", metadata={"chunk_id": "exact", "state": "MG", "module": "pdv"}),
+            Document(page_content="Erro E-PDV-042 fora do estado", metadata={"chunk_id": "sp", "state": "SP", "module": "pdv"}),
         ]
 
     def test_bm25_finds_exact_error_code_and_prefilters(self):

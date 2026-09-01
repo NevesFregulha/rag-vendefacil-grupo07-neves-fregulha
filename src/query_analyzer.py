@@ -3,10 +3,33 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections.abc import Iterable, Mapping
 from typing import Any
 
-FILTER_FIELDS = ("state", "module", "customer_id", "priority")
+FILTER_FIELDS = ("doc_type", "state", "module", "customer_id", "priority")
+
+DOC_TYPE_ALIASES: dict[str, str] = {
+    "tickets": "ticket",
+    "ticket": "ticket",
+    "chamados": "ticket",
+    "chamado": "ticket",
+    "clientes": "customer",
+    "cliente": "customer",
+    "funcionarios": "employee",
+    "funcionario": "employee",
+    "produtos": "product",
+    "produto": "product",
+    "lojas": "store",
+    "vendas": "sale",
+    "logs": "log",
+    "manuais": "manual",
+    "manual": "manual",
+    "politicas": "policy",
+    "politica": "policy",
+    "emails": "email",
+    "atas": "ata",
+}
 
 # Estados presentes no corpus (customers.csv, stores.json, tickets.jsonl, system_logs.csv).
 STATE_NAMES: dict[str, str] = {
@@ -76,15 +99,16 @@ UF_PATTERN = re.compile(r"\b([A-Za-z]{2})\b")
 
 
 def _strip_accents(text: str) -> str:
-    replacements = {
-        "á": "a", "à": "a", "ã": "a", "â": "a",
-        "é": "e", "ê": "e",
-        "í": "i",
-        "ó": "o", "ô": "o", "õ": "o",
-        "ú": "u",
-        "ç": "c",
-    }
-    return "".join(replacements.get(char, char) for char in text)
+    normalized = unicodedata.normalize("NFKD", text)
+    return "".join(char for char in normalized if not unicodedata.combining(char))
+
+
+def _extract_doc_type(question_lower: str) -> str | None:
+    normalized = _strip_accents(question_lower)
+    for alias, doc_type in DOC_TYPE_ALIASES.items():
+        if re.search(rf"\b{re.escape(alias)}\b", normalized):
+            return doc_type
+    return None
 
 
 def _extract_state(question: str, question_lower: str) -> str | None:
@@ -136,6 +160,10 @@ def extract_filters(question: str) -> dict[str, str]:
 
     question_lower = question.lower()
     filters: dict[str, str] = {}
+
+    doc_type = _extract_doc_type(question_lower)
+    if doc_type:
+        filters["doc_type"] = doc_type
 
     state = _extract_state(question, question_lower)
     if state:

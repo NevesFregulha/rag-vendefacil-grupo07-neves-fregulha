@@ -130,7 +130,7 @@ No PowerShell, dentro da pasta do repositório:
 ```powershell
 py -m venv venv
 .\venv\Scripts\Activate.ps1
-.\venv\Scripts\python.exe -m pip install -r starter/requirements.txt
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
 ## Executar a ingestão
@@ -213,8 +213,8 @@ A recuperação híbrida e os filtros por metadados são implementados na Etapa 
 
 A recuperação em `src/retrieve.py` segue este fluxo:
 
-1. o Query Analyzer baseado em regras extrai `state`, `module`, `customer_id` e `priority`;
-2. os filtros são normalizados e validados contra os valores realmente presentes no índice;
+1. o Query Analyzer baseado em regras extrai `doc_type`, `state`, `module`, `customer_id` e `priority`;
+2. os filtros são normalizados e validados contra os valores realmente presentes no índice; um valor inválido retorna zero resultados em vez de ampliar silenciosamente a consulta;
 3. o FAISS recupera um conjunto ampliado (`fetch_k=500`) antes de aplicar o filtro;
 4. o BM25Plus busca termos exatos no corpus pré-filtrado;
 5. os rankings denso e esparso são combinados por Reciprocal Rank Fusion (RRF), com `k=60`.
@@ -245,6 +245,8 @@ O script imprime resultados lado a lado para três perguntas específicas por es
 
 Cada linha mostra `chunk_id`, arquivo de origem, estado, módulo e uma prévia do conteúdo. A coluna filtrada deve conter somente documentos que satisfaçam simultaneamente os metadados extraídos.
 
+Os resultados reais obtidos com o índice de 5.718 chunks estão documentados em [`RESULTADOS_ETAPA2.md`](RESULTADOS_ETAPA2.md).
+
 ## Testes
 
 Para executar todos os testes automatizados:
@@ -256,8 +258,10 @@ Para executar todos os testes automatizados:
 Resultado esperado após a Etapa 2:
 
 ```text
-36 passed, 2 skipped
+40 passed
 ```
+
+Sem a pasta local `index/`, os dois testes de persistência são ignorados até que `python -m src.vectorstore` seja executado.
 
 ## Próximas etapas
 

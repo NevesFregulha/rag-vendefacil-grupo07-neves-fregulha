@@ -8,9 +8,13 @@ from src.query_analyzer import extract_filters, metadata_vocabulary, validate_fi
 
 
 class QueryAnalyzerTests(unittest.TestCase):
+    def test_extracts_doc_type(self) -> None:
+        filters = extract_filters("Quais tickets estao abertos?")
+        self.assertEqual(filters["doc_type"], "ticket")
+
     def test_extracts_state_from_full_name(self) -> None:
         filters = extract_filters("Quais lojas estão localizadas em Minas Gerais?")
-        self.assertEqual(filters, {"state": "MG"})
+        self.assertEqual(filters, {"doc_type": "store", "state": "MG"})
 
     def test_extracts_state_from_uf(self) -> None:
         filters = extract_filters("Existem tickets abertos no estado de SP?")
@@ -48,6 +52,7 @@ class QueryAnalyzerTests(unittest.TestCase):
         self.assertEqual(
             filters,
             {
+                "doc_type": "ticket",
                 "state": "MG",
                 "module": "estoque",
                 "customer_id": "CUST010",
@@ -55,9 +60,9 @@ class QueryAnalyzerTests(unittest.TestCase):
             },
         )
 
-    def test_returns_empty_dict_when_no_filters_found(self) -> None:
+    def test_extracts_product_doc_type_without_other_filters(self) -> None:
         filters = extract_filters("Quais produtos a VendeFácil oferece?")
-        self.assertEqual(filters, {})
+        self.assertEqual(filters, {"doc_type": "product"})
 
     def test_returns_empty_dict_for_blank_question(self) -> None:
         self.assertEqual(extract_filters(""), {})

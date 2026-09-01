@@ -55,6 +55,18 @@ class MarkdownLoaderTests(unittest.TestCase):
 
 
 class TextLoaderTests(unittest.TestCase):
+    def test_marks_customer_email_with_credentials_as_restricted(self) -> None:
+        message = "De: cliente@empresa.com\n\nMinha senha temporaria e Segredo123."
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "customer_001.txt"
+            path.write_text(message, encoding="utf-8")
+            documents = load_text_file(path)
+
+        self.assertTrue(documents)
+        self.assertTrue(
+            all(doc.metadata["sensitivity"] == "restrito" for doc in documents)
+        )
+
     def test_separates_email_thread_before_size_split(self) -> None:
         thread = (
             "De: primeira@empresa.com\nData: 26/08/2026\n\nPrimeira mensagem.\n\n"

@@ -1,0 +1,11 @@
+langchain
+langchain-community
+langchain-text-splitters
+langchain-huggingface
+faiss-cpu
+pydantic
+pypdf
+rank-bm25
+python-dotenv
+sentence-transformers
+pytest

@@ -35,6 +35,13 @@ def analyze_query(question: str, documents: Iterable[Document]) -> dict[str, str
     return validate_filters(extract_filters(question), metadata_vocabulary(document_list))
 
 
+def _has_invalid_filters(
+    requested: Mapping[str, str], validated: Mapping[str, str]
+) -> bool:
+    """Impede que filtro invalido seja removido e amplie silenciosamente a busca."""
+    return bool(requested) and set(requested) != set(validated)
+
+
 def dense_search(
     vectorstore: Any,
     question: str,
@@ -48,11 +55,12 @@ def dense_search(
         raise ValueError("Use k >= 1 e fetch_k >= k.")
 
     documents = documents_from_vectorstore(vectorstore)
-    selected_filters = (
-        validate_filters(filters, metadata_vocabulary(documents))
-        if filters is not None
-        else analyze_query(question, documents)
+    requested_filters = dict(filters) if filters is not None else extract_filters(question)
+    selected_filters = validate_filters(
+        requested_filters, metadata_vocabulary(documents)
     )
+    if _has_invalid_filters(requested_filters, selected_filters):
+        return []
     search_filter = dict(selected_filters) or None
     return vectorstore.similarity_search(
         question,
@@ -80,9 +88,10 @@ def bm25_search(
     if k < 1:
         raise ValueError("Use k >= 1.")
     corpus = list(documents)
-    selected_filters = (
-        validate_filters(filters, metadata_vocabulary(corpus)) if filters else {}
-    )
+    requested_filters = dict(filters or {})
+    selected_filters = validate_filters(requested_filters, metadata_vocabulary(corpus))
+    if _has_invalid_filters(requested_filters, selected_filters):
+        return []
     if selected_filters:
         corpus = [document for document in corpus if matches_filters(document, selected_filters)]
     if not corpus:
@@ -133,11 +142,12 @@ def hybrid_search(
 ) -> list[Document]:
     """Combina resultados densos e BM25 com Reciprocal Rank Fusion."""
     documents = documents_from_vectorstore(vectorstore)
-    selected_filters = (
-        validate_filters(filters, metadata_vocabulary(documents))
-        if filters is not None
-        else analyze_query(question, documents)
+    requested_filters = dict(filters) if filters is not None else extract_filters(question)
+    selected_filters = validate_filters(
+        requested_filters, metadata_vocabulary(documents)
     )
+    if _has_invalid_filters(requested_filters, selected_filters):
+        return []
     candidate_k = max(k * 4, k)
     dense_results = dense_search(
         vectorstore,
