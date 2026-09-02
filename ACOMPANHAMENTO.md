@@ -214,4 +214,37 @@ Também integrei o fluxo completo do Query Analyzer até a busca híbrida, criei
 
 ---
 
+## Encontro 5 - 2026-09-02
+
+**Etapa:** 3 - Síntese estruturada, evidência e guardrails de LGPD
+
+### Relato individual - Fernanda Fregulha
+
+
+
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
+
+Comecei pela TASK 01: o esquema Pydantic da resposta estruturada. Na branch ester/schema-pydantic, implementei em src/schema.py as classes SourceEvidence e RAGResponse, baseadas no starter/schema.py. Usei Literal em vez de str livre nos campos fechados (doc_type, confidence_level, refusal_reason), pra impedir que o modelo escreva variações como "Alta"/"ALTA". Adicionei chunk_id obrigatório em SourceEvidence, que faltava no esquema inicial, pra rastrear a evidência até o chunk exato do índice, e limitei a citação a 400 caracteres. O ponto principal foi implementar a regra de consistência do guia (recusa exige sources_used vazia e refusal_reason preenchido; resposta normal exige pelo menos uma fonte) como validador Pydantic (model_validator), não como instrução de prompt. Criei 13 testes em tests/test_schema.py, cobrindo os quatro cenários do validador.
+
+Na sequência, iniciei a TASK 02: a política de LGPD e escopo. Na branch ester/politica-lgpd, implementei em src/policy.py a função decide_policy(), baseada nas regras reais da política interna (seguranca_lgpd.md): recusa quando a pergunta pede dado protegido (LGPD_PROTECTION/CREDENTIAL_PROTECTION) ou foge do domínio da VendeFácil (OUT_OF_DOMAIN); mascara quando a fonte recuperada tem sensitivity="restrito", usando mask_sensitive_text() que criei pra ofuscar CPF, cartão, e-mail e telefone. Antes de abrir o PR, comparei a implementação com o guia do Notion e achei uma lacuna: o vocabulário de domínio não cobria "suporte"/"equipe", então "Qual a média salarial da equipe de suporte?" caía errado em OUT_OF_DOMAIN. Corrigi o vocabulário e adicionei um teste pra esse caso. Criei 14 testes em tests/test_policy.py, com pelo menos duas perguntas por nível. Suíte completa: 67 testes aprovados.
+
+### Resumo do dia (escrito em conjunto)
+
+**Entregamos hoje:**
+- 
+
+**Ficou pendente:**
+- 
+
+**Bloqueios em aberto:**
+- 
+
+**Próximo passo:**
+- 
+
+**Uso de assistentes de IA:**
+- 
+
+---
+
 *TIC em Trilhas · PUC-Rio · Instituto ECOA · MCTI Futuro · Softex*
