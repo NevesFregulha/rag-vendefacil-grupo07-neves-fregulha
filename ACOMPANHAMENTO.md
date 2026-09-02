@@ -216,11 +216,17 @@ Também integrei o fluxo completo do Query Analyzer até a busca híbrida, criei
 
 ## Encontro 5 - 2026-09-02
 
-**Etapa:** 3 - Síntese estruturada, evidência e guardrails de LGPD
+**Etapa:** 3 - Síntese estruturada, evidências e guardrails de LGPD
 
 ### Relato individual - Fernanda Fregulha
 
+Hoje trabalhei nas TASKS 03, 04 e 05 da Etapa 3. Na TASK 03, criei o pipeline de geração em `src/rag.py`, integrando o LLM à função `hybrid_search()` e usando `with_structured_output(RAGResponse)` para exigir uma saída compatível com o schema Pydantic. Mantive o LLM injetável para que o pipeline não fique preso a um único provedor e implementei tentativas configuráveis quando a saída não puder ser validada ou interpretada.
 
+Na TASK 04, reforcei a rastreabilidade das evidências. A resposta só é aceita quando cada citação corresponde a um chunk realmente recuperado, com `filepath`, `chunk_id` e `doc_type` corretos, e quando `quotation` é um trecho literal do conteúdo desse chunk. Também tratei erros de parsing, inconsistências do schema e evidências inventadas com retry e mensagem corretiva para a tentativa seguinte. Quando as tentativas se esgotam, o pipeline preserva a causa original do erro para facilitar o diagnóstico.
+
+Na TASK 05, criei testes integrados dos guardrails para perguntas recusadas por LGPD, solicitações de credenciais, perguntas fora do escopo, fontes que exigem mascaramento e perguntas permitidas. Incluí pelo menos duas perguntas por nível da política e verifiquei que dados pessoais não chegam sem máscara ao contexto enviado ao LLM. Ao final, executei a suíte completa e obtive 81 testes aprovados e 16 subtestes aprovados, com apenas um aviso de depreciação já existente do `langchain-community`.
+
+Também comparei as Etapas 1, 2 e 3 com os requisitos da atividade para avaliar a prontidão para a Etapa 4. Confirmei que as Etapas 1 e 2 atendem aos principais critérios de pronto, reproduzindo a ingestão de 5.718 chunks, o script de sanidade e o comparativo da busca híbrida com e sem filtros. Estamos finalizando a Etapa 3 para prosseguir com a Etapa 4 no próximo encontro. Utilizei um assistente de IA como apoio durante as atividades e conferi os resultados no código, na suíte de testes e nos scripts do projeto antes de registrar este relato.
 
 ### Relato individual - Ester da Silva Antonio Nóbrega Neves
 
@@ -230,20 +236,26 @@ Na sequência, iniciei a TASK 02: a política de LGPD e escopo. Na branch ester/
 
 ### Resumo do dia (escrito em conjunto)
 
-**Entregamos hoje:**
-- 
+**Entregamos hoje localmente:**
+- TASK 01: criação dos modelos Pydantic `SourceEvidence` e `RAGResponse`, com campos `Literal`, `chunk_id`, limite de citação e validador de consistência.
+- TASK 02: implementação da política de LGPD e escopo, com os níveis recusar, mascarar e responder, além da recusa de perguntas fora do escopo.
+- TASK 03: pipeline RAG integrado à busca híbrida, com saída estruturada em `RAGResponse` e retry.
+- TASK 04: validação de citações literais por arquivo e chunk, com tratamento explícito de falhas.
+- TASK 05: testes integrados de schema, LGPD, mascaramento, recusa, fora de escopo, citações e retry.
+- TASK 06: documentação e validação final da Etapa 3, entregue pela Ester com a atualização do `README.md`, o registro das decisões da política e a validação do fluxo completo.
+- Auditoria das Etapas 1, 2 e 3 em relação aos requisitos da atividade.
 
 **Ficou pendente:**
-- 
+- Etapa 4: avaliação, interface e relatório.
 
 **Bloqueios em aberto:**
-- 
+- Não tivemos bloqueios durante as atividades de hoje.
 
 **Próximo passo:**
-- 
+- Iniciar a Etapa 4 no próximo encontro.
 
 **Uso de assistentes de IA:**
-- 
+- Utilizamos assistência de IA como apoio durante as atividades. As sugestões e os resultados foram revisados e conferidos antes de serem incorporados ao projeto.
 
 ---
 
