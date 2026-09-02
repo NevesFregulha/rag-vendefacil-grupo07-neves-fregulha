@@ -18,6 +18,16 @@ class RecusarLgpdTests(unittest.TestCase):
         self.assertEqual(decision.level, "recusar")
         self.assertEqual(decision.refusal_reason, "LGPD_PROTECTION")
 
+    def test_pergunta_agregada_sobre_salario_nao_cai_em_out_of_domain(self) -> None:
+        # "equipe" e "suporte" pertencem ao vocabulário VendeFácil, então a recusa
+        # deve vir da lógica de LGPD (dado salarial agregado), não da falta de
+        # vocabulário de domínio.
+        decision = decide_policy("Qual a média salarial da equipe de suporte?")
+
+        self.assertEqual(decision.level, "recusar")
+        self.assertEqual(decision.refusal_reason, "LGPD_PROTECTION")
+        self.assertNotEqual(decision.refusal_reason, "OUT_OF_DOMAIN")
+
 
 class RecusarCredencialTests(unittest.TestCase):
     def test_recusa_pergunta_sobre_senha_do_sistema(self) -> None:

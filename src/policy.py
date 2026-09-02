@@ -71,6 +71,8 @@ CREDENTIAL_KEYWORDS = (
 LGPD_KEYWORDS = (
     "salario",
     "salarios",
+    "salarial",
+    "salariais",
     "remuneracao",
     "remuneracoes",
     "cpf",
@@ -120,6 +122,11 @@ DOMAIN_KEYWORDS = (
     "funcionarios",
     "colaborador",
     "colaboradores",
+    "equipe",
+    "equipes",
+    "suporte",
+    "rh",
+    "recursos humanos",
     "politica",
     "politicas",
     "manual",
@@ -149,6 +156,10 @@ DOMAIN_KEYWORDS = (
     "logistica",
     "inventario",
     "analytics",
+    "compra",
+    "compras",
+    "fornecedor",
+    "fornecedores",
 )
 
 
