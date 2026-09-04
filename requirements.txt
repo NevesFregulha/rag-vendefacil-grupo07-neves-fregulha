@@ -2,6 +2,7 @@ langchain
 langchain-community
 langchain-text-splitters
 langchain-huggingface
+langchain-anthropic
 faiss-cpu
 pydantic
 pypdf
@@ -9,3 +10,4 @@ rank-bm25
 python-dotenv
 sentence-transformers
 pytest
+
