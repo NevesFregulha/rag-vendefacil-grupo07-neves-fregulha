@@ -263,15 +263,68 @@ Resultado esperado após a Etapa 2:
 
 Sem a pasta local `index/`, os dois testes de persistência são ignorados até que `python -m src.vectorstore` seja executado.
 
+## Etapa 3 — Síntese estruturada, evidências e guardrails de LGPD
+
+### Schema estruturado (`src/schema.py`)
+
+A resposta do assistente é validada por dois modelos Pydantic, baseados em `starter/schema.py`:
+
+- `SourceEvidence`: exige `filepath`, `chunk_id`, `quotation` (trecho literal, até 400 caracteres) e opcionalmente `doc_type`. Campos como `doc_type` usam `Literal` em vez de `str` livre, para impedir que o LLM escreva variações do mesmo valor (ex.: "Alta" vs "ALTA").
+- `RAGResponse`: reúne `answer`, `confidence_level`, `sources_used`, `reasoning`, `is_refusal` e `refusal_reason`.
+
+Um `model_validator` garante a consistência estrutural da resposta, independentemente do prompt:
+
+- se `is_refusal=True`, `confidence_level` deve ser `"Recusado"`, `refusal_reason` deve estar preenchido e `sources_used` deve estar vazia;
+- se `is_refusal=False`, `confidence_level` não pode ser `"Recusado"`, `refusal_reason` deve ser `None` e é obrigatório citar ao menos uma evidência em `sources_used`.
+
+Optamos por aplicar essa regra como validador Pydantic, e não apenas como instrução de prompt, porque um LLM pode ignorar instruções textuais sob pressão de outros trechos do prompt; o validador impede a inconsistência na saída independentemente do que o modelo gerar.
+
+### Política de LGPD e escopo (`src/policy.py`)
+
+As regras de `decide_policy()` derivam diretamente de `data/unstructured/policies/seguranca_lgpd.md` (itens 1.2 a 1.4) e resultam em três níveis:
+
+| Nível | Quando ocorre | Resultado |
+|---|---|---|
+| `recusar` | Pergunta fora do domínio VendeFácil, ou pede diretamente dado protegido (salário, CPF, dados de saúde) ou credencial (senha, cartão, chave de API) | `is_refusal=True`, com `refusal_reason` em `OUT_OF_DOMAIN`, `LGPD_PROTECTION` ou `CREDENTIAL_PROTECTION`; a recusa ocorre **antes** da busca, sem consultar o índice |
+| `mascarar` | Pergunta legítima, mas alguma fonte recuperada tem `sensitivity="restrito"` | O conteúdo dos chunks é mascarado (`mask_sensitive_text`) antes de ir para o contexto do LLM — CPF, cartão, CVV, e-mail e telefone nunca chegam ao prompt em texto puro |
+| `responder` | Pergunta e fontes dentro da política | Segue o fluxo normal |
+
+O vocabulário de domínio (`DOMAIN_KEYWORDS`) foi ampliado durante a validação: perguntas como "Qual a média salarial da equipe de suporte?" inicialmente caíam em `OUT_OF_DOMAIN` porque "suporte" e "equipe" não estavam cobertos; o termo salarial correto (`LGPD_PROTECTION`) só passou a prevalecer depois de incluir esses termos no vocabulário.
+
+### Pipeline de geração (`src/rag.py`)
+
+`generate_rag_response()` integra política, busca híbrida e geração estruturada:
+
+1. avalia a política pela pergunta isolada; se `recusar`, retorna a recusa sem consultar `hybrid_search`;
+2. busca os documentos relevantes e reavalia a política com os metadados das fontes recuperadas (para decidir `mascarar`);
+3. monta o contexto (mascarado, se aplicável) e chama `llm.with_structured_output(RAGResponse)`;
+4. valida que toda citação em `sources_used` corresponde a um chunk realmente recuperado (`filepath` + `chunk_id`) e que a `quotation` é um trecho literal do conteúdo desse chunk — evidências inventadas são rejeitadas;
+5. em caso de erro de parsing, de validação Pydantic ou de evidência inválida, tenta novamente (`max_attempts`, padrão 3) enviando uma mensagem corretiva com o erro; se as tentativas se esgotam, propaga a causa original em `StructuredGenerationError`.
+
+O `llm` é injetado (deve implementar `with_structured_output`), o que permite usar qualquer chat model compatível com LangChain e testar o pipeline com um LLM fake, sem chamadas reais de API.
+
+### Testes de guardrails
+
+`tests/test_guardrails.py` cobre, com pelo menos duas perguntas por caso:
+
+- duas perguntas de dados pessoais (CPF, salário) recusadas por `LGPD_PROTECTION`, sem chegar a consultar o índice;
+- duas perguntas de credenciais (senha, cartão) recusadas por `CREDENTIAL_PROTECTION`;
+- duas perguntas fora do domínio recusadas por `OUT_OF_DOMAIN`;
+- duas perguntas com fontes `sensitivity="restrito"`, confirmando que o dado sensível não aparece nem no prompt enviado ao LLM nem na resposta final;
+- duas perguntas permitidas, validando o schema retornado e a correspondência literal da evidência com o chunk de origem.
+
+### Executar a suíte completa
+
+```powershell
+.\venv\Scripts\python.exe -m pytest -q
+```
+
+Resultado obtido ao final da Etapa 3:
+
+```text
+81 passed, 16 subtests passed
+```
+
 ## Próximas etapas
 
-- **Etapa 3:** síntese estruturada com Pydantic e guardrails de LGPD;
-  - criar `SourceEvidence` e `RAGResponse` com campos fechados por `Literal`;
-  - validar a consistência entre recusa, confiança, motivo e fontes utilizadas;
-  - integrar a geração estruturada com retry em falhas de validação;
-  - exigir `filepath`, `chunk_id` e trecho literal em toda resposta não recusada;
-  - implementar os níveis de LGPD: recusar, mascarar e responder;
-  - testar pelo menos duas perguntas de cada nível de LGPD;
-  - recusar perguntas fora do escopo da VendeFácil;
-  - documentar a política de LGPD e as decisões adotadas.
 - **Etapa 4:** benchmark, relatório de falhas e interface de demonstração.
