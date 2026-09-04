@@ -16,11 +16,7 @@ from typing import Any
 
 import config
 from src.policy import decide_policy
-from src.rag import (
-    NoRelevantDocumentsError,
-    StructuredGenerationError,
-    generate_rag_response,
-)
+from src.rag import generate_rag_response
 from src.retrieve import hybrid_search
 from src.vectorstore import load_vectorstore
 
@@ -82,7 +78,7 @@ def run_question(vectorstore: Any, llm: Any, item: dict[str, Any]) -> dict[str, 
                 "error": None,
             }
         )
-    except (NoRelevantDocumentsError, StructuredGenerationError) as error:
+    except Exception as error:  # noqa: BLE001 - benchmark nao pode parar por 1 pergunta ruim
         entry.update(
             {
                 "answer": None,
@@ -123,13 +119,7 @@ def _print_summary_table(summary: dict[str, dict[str, int]]) -> None:
         )
 
 
-def main() -> None:
-    questions = load_benchmark_questions()
-    vectorstore = load_vectorstore()
-    llm = config.get_llm()
-
-    results = [run_question(vectorstore, llm, item) for item in questions]
-
+def _save_results(results: list[dict[str, Any]]) -> None:
     RESULTS_PATH.write_text(
         json.dumps(
             {
@@ -143,7 +133,19 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    print(f"Total de perguntas executadas: {len(results)}\n")
+
+def main() -> None:
+    questions = load_benchmark_questions()
+    vectorstore = load_vectorstore()
+    llm = config.get_llm()
+
+    results: list[dict[str, Any]] = []
+    for index, item in enumerate(questions, start=1):
+        print(f"[{index}/{len(questions)}] {item['id']} - {item['question'][:60]}...")
+        results.append(run_question(vectorstore, llm, item))
+        _save_results(results)  # salva a cada pergunta, para nao perder progresso
+
+    print(f"\nTotal de perguntas executadas: {len(results)}\n")
     _print_summary_table(summarize_by_category(results))
     print(f"\nResultados salvos em: {RESULTS_PATH}")
 

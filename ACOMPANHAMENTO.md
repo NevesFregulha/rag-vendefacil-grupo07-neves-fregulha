@@ -259,4 +259,43 @@ Na sequência, iniciei a TASK 02: a política de LGPD e escopo. Na branch ester/
 
 ---
 
+## Encontro 6 - 2026-09-04
+
+**Etapa:** 4 - Dataset, executor do benchmark, RAG Triad e primeira execução real
+
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
+
+Assumi as TASKs neste encontro porque a Fernanda não pôde comparecer. Comecei finalizando a TASK 06 da Etapa 3: o README.md ainda listava a Etapa 3 em "Próximas etapas", como pendente, embora a implementação já estivesse pronta e testada desde o encontro anterior. Reescrevi essa seção documentando o schema Pydantic, a política de LGPD e o pipeline de geração, e validei o fluxo completo rodando a suíte de testes.
+Na Etapa 4, criei a branch ester/benchmark-dataset e baixei questions_and_ground_truth.json do Drive indicado no guia (TASK 01). O arquivo real tem 24 perguntas, não 20 como o guia descreve — documentei essa divergência e decidi seguir com as 24 reais, sem travar a etapa, já que o dataset baixado tem precedência sobre a descrição textual.
+Na TASK 02, implementei eval/run_benchmark.py, que roda todas as perguntas pelo pipeline RAG e grava eval/results.json. Na TASK 03 (branch ester/rag-triad), implementei eval/judge_prompt.py com as três métricas da RAG Triad: Context Relevance determinística (comparando fontes recuperadas com o gabarito, marcando como não aplicável quando a pergunta espera recusa) e Answer Relevance/Groundedness via LLM-as-judge com saída estruturada (JudgeVerdict).
+Ao tentar rodar o benchmark de verdade, esbarrei em obstáculos de infraestrutura: não tinha crédito na Anthropic nem no OpenRouter (saldo negativo). Migrei o config.py para usar a Groq como provedor padrão (tier gratuito, sem cartão). Travei em três problemas técnicos na sequência: (1) erro de SSL CERTIFICATE_VERIFY_FAILED, causado por um antivírus/proxy do Windows interceptando o certificado — resolvi instalando pip-system-certs, que faz o Python usar o repositório de certificados do próprio Windows; (2) o modelo padrão que eu tinha configurado (llama-3.3-70b-versatile) não existe mais no catálogo atual da Groq — troquei para openai/gpt-oss-120b depois de consultar a lista real de modelos disponíveis; (3) ao rodar as 24 perguntas, a primeira tentativa quebrou o script inteiro sem salvar nada, porque run_question() só capturava exceções específicas do meu próprio pipeline (NoRelevantDocumentsError, StructuredGenerationError), e um erro vindo direto da API da Groq (BadRequestError, schema inválido) não era tratado. Corrigi capturando qualquer exceção por pergunta e salvando o results.json incrementalmente, para não perder progresso numa falha isolada.
+Com a correção, rodei as 24 perguntas de verdade e identifiquei 10 erros, com 4 causas distintas: 4 perguntas sem contexto recuperado (NoRelevantDocumentsError — possível gap real de recuperação), 2 com citação acima do limite de 400 caracteres do CITATION_MAX_LENGTH, 3 com answer vazia gerada pelo modelo, e 1 por rate limit do tier gratuito da Groq. Decidi não corrigir nada disso agora — são achados reais e valiosos para o diagnóstico da TASK 04, e ajustar às pressas a 30 minutos do horário de parar era mais risco do que benefício.
+
+### Resumo do dia (escrito em conjunto)
+
+**Entregamos hoje:**
+- TASK 06 da Etapa 3 finalizada (README documentado, fluxo validado)
+- TASK 01, 02 e 03 da Etapa 4: dataset do benchmark, executor (eval/run_benchmark.py) e cálculo da RAG Triad (eval/judge_prompt.py)
+- Migração do provedor de LLM para Groq (gratuito), corrigindo bloqueio de crédito de API
+- Primeira execução real do benchmark com as 24 perguntas, com 4 causas de falha diagnosticadas em eval/results.json
+
+**Ficou pendente:**
+- TASK 04 (RELATORIO.md): falta rodar eval/judge_prompt.py e escrever o diagnóstico das piores falhas
+- TASK 05 (interface de demonstração): reservada para a Fernanda, independente do restante
+- TASK 06 (documentação final da Etapa 4): atualizar README.md, revisar .env.example e .gitignore, validar o fluxo completo
+- Decidir se corrige CITATION_MAX_LENGTH e o tratamento de rate limit, ou documenta como limitação conhecida
+
+**Bloqueios em aberto:**
+- Créditos insuficientes na Anthropic e no OpenRouter — resolvido migrando para Groq
+- Rate limit do tier gratuito da Groq apareceu em 1 das 24 perguntas — registrar como limitação conhecida, não é bug do pipeline
+
+**Próximo passo:**
+- Retomar com a TASK 04: rodar eval/judge_prompt.py, escolher as 3 piores falhas e escrever o RELATORIO.md 
+- Finalizar as TASK 05 e 06 
+
+**Uso de assistentes de IA:**
+- Utilizei assistência de IA como apoio durante as atividades. As sugestões e os resultados foram revisados e conferidos antes de serem incorporados ao projeto.
+
+---
+
 *TIC em Trilhas · PUC-Rio · Instituto ECOA · MCTI Futuro · Softex*
