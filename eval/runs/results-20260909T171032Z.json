@@ -1,0 +1,407 @@
+{
+  "generated_at": "2026-09-09T17:25:26.177507+00:00",
+  "total_questions": 11,
+  "results": [
+    {
+      "id": "Q01",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quais são os produtos oferecidos pela empresa VendeFácil?",
+      "expected_sources": [
+        "data/structured/products.json"
+      ],
+      "expected_metadata": {
+        "doc_type": "structured",
+        "format": "json"
+      },
+      "ground_truth_answer": "A VendeFácil oferece 5 produtos principais: 1) VendeFácil PDV (ponto de venda e frente de caixa); 2) VendeFácil Estoque (gestão de inventário e suprimentos); 3) VendeFácil Loja (e-commerce e catálogo digital); 4) VendeFácil Analytics (inteligência de negócios e DRE); 5) VendeFácil Pay (meios de pagamento e TEF).",
+      "key_points_for_evaluation": [
+        "Mencionar os 5 produtos principais",
+        "Breve descrição de cada produto"
+      ],
+      "retrieved_sources": [
+        "customer_006_duvida_inventario_cego.txt",
+        "products.json",
+        "sales.csv"
+      ],
+      "answer": "Os produtos oferecidos pela VendeFácil são: VendeFácil PDV, VendeFácil Analytics, VendeFácil Loja, VendeFácil Estoque e VendeFácil Pay.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "O contexto recuperado contém registros de cinco produtos da VendeFácil, cada um com seu nome claramente identificado no campo `name`. Todos os registros pertencem ao arquivo `products.json` e têm `doc_type` product, indicando que são produtos da empresa.",
+      "sources_used": [
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PDV-1",
+          "quotation": "name: VendeFácil PDV",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ANALYTICS-4",
+          "quotation": "name: VendeFácil Analytics",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-LOJA-3",
+          "quotation": "name: VendeFácil Loja",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ESTOQUE-2",
+          "quotation": "name: VendeFácil Estoque",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PAY-5",
+          "quotation": "name: VendeFácil Pay",
+          "doc_type": "product"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q02",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quem é o responsável técnico (Tech Lead) e a gerente de produto (PM) do VendeFácil Estoque?",
+      "expected_sources": [
+        "data/structured/products.json",
+        "data/structured/employees.csv"
+      ],
+      "expected_metadata": {
+        "module": "estoque"
+      },
+      "ground_truth_answer": "O Tech Lead (responsável técnico) do VendeFácil Estoque é Carlos Mendes e a Product Manager (PM) responsável é Ana Souza.",
+      "key_points_for_evaluation": [
+        "Tech Lead: Carlos Mendes",
+        "PM: Ana Souza"
+      ],
+      "retrieved_sources": [
+        "codigo_de_conduta.md",
+        "customers.csv",
+        "importacao_nfe_xml.md",
+        "inventario.md",
+        "seguranca_lgpd.pdf",
+        "sincronizacao_estoque.md",
+        "tickets.jsonl"
+      ],
+      "answer": "Não há informação disponível nos documentos recuperados.",
+      "confidence_level": "Recusado",
+      "is_refusal": true,
+      "refusal_reason": "SEM_EVIDENCIA",
+      "reasoning": "Nenhum dos documentos recuperados menciona o responsável técnico (Tech Lead) ou a gerente de produto (PM) do VendeFácil Estoque.",
+      "sources_used": [],
+      "error": null
+    },
+    {
+      "id": "Q03",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é o prazo de arrependimento para reembolso integral de 100% no cancelamento de planos da VendeFácil?",
+      "expected_sources": [
+        "data/unstructured/policies/reembolso.pdf",
+        "data/unstructured/policies/reembolso.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "topic": "reembolso"
+      },
+      "ground_truth_answer": "O prazo para reembolso integral de 100% do valor pago é de até 7 dias corridos após a contratação inicial, conforme o Código de Defesa do Consumidor e a Política de Reembolso da empresa.",
+      "key_points_for_evaluation": [
+        "Prazo de 7 dias corridos",
+        "Reembolso integral de 100%"
+      ],
+      "retrieved_sources": [
+        "customer_002_reembolso_cancelamento.txt",
+        "customer_017_cancelamento_plano_basic.txt",
+        "reembolso.md",
+        "reembolso.pdf"
+      ],
+      "answer": "O prazo de arrependimento previsto na política de reembolso da VendeFácil é de 7 dias corridos após a contratação inicial, permitindo o reembolso integral de 100% do valor pago.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "A política de reembolso estabelece que novos assinantes têm direito ao reembolso integral de 100% dos valores pagos caso a solicitação seja efetuada em até 7 dias corridos após a contratação inicial.",
+      "sources_used": [
+        {
+          "filepath": "reembolso.md",
+          "chunk_id": "md-reembolso-secao-2-parte-1",
+          "quotation": "Conforme o Código de Defesa do Consumidor, novos assinantes têm direito ao reembolso integral de 100% dos valores pagos caso a solicitação seja efetuada em até 7 dias corridos após a contratação inicial.",
+          "doc_type": "policy"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q04",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é a política de home office para os funcionários da equipe de Engenharia?",
+      "expected_sources": [
+        "data/unstructured/policies/home_office.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "department": "engenharia"
+      },
+      "ground_truth_answer": "A equipe de Engenharia funciona no modelo Remoto First (100% Home Office), com encontros presenciais trimestrais na matriz da empresa.",
+      "key_points_for_evaluation": [
+        "Modelo Remoto First / 100% Home Office",
+        "Encontros presenciais trimestrais"
+      ],
+      "retrieved_sources": [
+        "employees.csv",
+        "home_office.md"
+      ],
+      "answer": "Não há informação suficiente no contexto recuperado para responder a sua pergunta.",
+      "confidence_level": "Recusado",
+      "is_refusal": true,
+      "refusal_reason": "SEM_EVIDENCIA",
+      "reasoning": "O arquivo de política home_office.md contém apenas o título e a vigência, sem detalhes sobre requisitos ou condições de home office para a equipe de Engenharia. Nenhum registro de funcionários inclui informação sobre política de home office. Portanto não há evidência para responder.",
+      "sources_used": [],
+      "error": null
+    },
+    {
+      "id": "Q05",
+      "category": "Filtragem por Metadados",
+      "question": "Quais tickets de suporte foram abertos por clientes do estado de Minas Gerais (MG) para o módulo de estoque?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl"
+      ],
+      "expected_metadata": {
+        "state": "MG",
+        "module": "estoque"
+      },
+      "ground_truth_answer": "Foram abertos 3 tickets em Minas Gerais (MG) para o módulo de estoque: 1) TCK-1001 (Supermercado Boa Compra - Erro na sincronização entre matriz e filial Savassi); 2) TCK-1002 (Drogaria Vida & Saúde - Divergência na contagem de lote no inventário cego); 3) TCK-1004 (Materiais de Construção Silva - Lentidão ao importar XML de NF-e com mais de 200 itens).",
+      "key_points_for_evaluation": [
+        "Identificar os tickets TCK-1001, TCK-1002 e TCK-1004",
+        "Confirmar que são do estado de MG e do módulo de estoque"
+      ],
+      "retrieved_sources": [
+        "tickets.jsonl"
+      ],
+      "answer": "Os tickets de suporte abertos por clientes de Minas Gerais (MG) para o módulo de estoque são: **TCK-1006**, **TCK-1001**, **TCK-1002** e **TCK-1004**.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "Todos os tickets listados no contexto com Estado MG e Módulo estoque correspondem aos quatro tickets mencionados.",
+      "sources_used": [
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1006",
+          "quotation": "Ticket: TCK-1006\nCliente: CUST009\nNome do cliente: Empório Gourmet Mineiro\nEstado: MG\nMódulo: estoque",
+          "doc_type": "ticket"
+        },
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1001",
+          "quotation": "Ticket: TCK-1001\nCliente: CUST001\nNome do cliente: Supermercado Boa Compra\nEstado: MG\nMódulo: estoque",
+          "doc_type": "ticket"
+        },
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1002",
+          "quotation": "Ticket: TCK-1002\nCliente: CUST002\nNome do cliente: Drogaria Vida & Saúde\nEstado: MG\nMódulo: estoque",
+          "doc_type": "ticket"
+        },
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1004",
+          "quotation": "Ticket: TCK-1004\nCliente: CUST005\nNome do cliente: Materiais de Construção Silva\nEstado: MG\nMódulo: estoque",
+          "doc_type": "ticket"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q06",
+      "category": "Filtragem por Metadados",
+      "question": "Quais chamados com prioridade 'Crítica' foram registrados no sistema e qual é o SLA de solução para esse nível?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/policies/atendimento_sla.md"
+      ],
+      "expected_metadata": {
+        "priority": "Crítica"
+      },
+      "ground_truth_answer": "O ticket de prioridade Crítica registrado é o TCK-1005 (Auto Peças Central - Transação de TEF aprovada na maquininha porém não finaliza venda no PDV). O SLA de solução para severidade Crítica é de até 2 horas (com primeira resposta em até 15 minutos).",
+      "key_points_for_evaluation": [
+        "Identificar TCK-1005",
+        "SLA de resposta: 15 minutos",
+        "SLA de solução: 2 horas"
+      ],
+      "retrieved_sources": [
+        "atendimento_sla.md",
+        "reembolso.pdf",
+        "seguranca_lgpd.pdf",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197073, Requested 3755. Please try again in 5m57.696s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q07",
+      "category": "Filtragem por Metadados",
+      "question": "Listar os logs de erro registrados para o cliente 'CUST008' (Auto Peças Central) no serviço de pagamento (pay).",
+      "expected_sources": [
+        "data/semi_structured/system_logs.csv"
+      ],
+      "expected_metadata": {
+        "customer_id": "CUST008",
+        "module": "pay"
+      },
+      "ground_truth_answer": "Os logs para o cliente CUST008 no serviço vendefacil-pay são: 1) TEF_TIMEOUT (Erro PAY-504) - Timeout aguardando resposta do Pinpad IP 192.168.1.105 na porta 6090; 2) TEF_RETRY_FAILED (Erro PAY-502) - Conexão recusada pelo Windows Firewall no host AutoPecas-Caixa01.",
+      "key_points_for_evaluation": [
+        "Identificar os códigos PAY-504 e PAY-502",
+        "Mencionar o problema de firewall na porta 6090"
+      ],
+      "retrieved_sources": [
+        "system_logs.csv",
+        "tickets.jsonl"
+      ],
+      "answer": "O único registro de erro no serviço de pagamento (pay) para o cliente CUST008 (Auto Peças Central) é:\n\n• **Log de erro** – 2026‑02‑14 10:04:12 – Evento: TEF_TIMEOUT – Código de erro: PAY‑504 – Mensagem: \"Timeout waiting response from Pinpad IP 192.168.1.105 on port 6090. Transaction aborted by local agent..\"\n\nEsse log indica que a transação TEF expirou enquanto aguardava resposta do Pinpad.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "O contexto recuperado contém apenas um log de nível ERROR para o cliente CUST008 no serviço vendefacil-pay e módulo pay, que corresponde ao pedido de listar logs de erro. O outro registro de nível WARN não é considerado erro.",
+      "sources_used": [
+        {
+          "filepath": "system_logs.csv",
+          "chunk_id": "log-system_logs-2026-02-14 10:04:12-285",
+          "quotation": "Log registrado em 2026-02-14 10:04:12. Nível: ERROR. Serviço: vendefacil-pay. Módulo: pay. Cliente: CUST008. Evento: TEF_TIMEOUT. Código de erro: PAY-504. Mensagem: Timeout waiting response from Pinpad IP 192.168.1.105 on port 6090. Transaction aborted by local agent..",
+          "doc_type": "log"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q08",
+      "category": "Múltiplas Fontes (Multi-hop)",
+      "question": "O cliente Supermercado Boa Compra está reclamando de falha de sincronização. Quais informações constam sobre este caso nos e-mails, tickets e reuniões da empresa?",
+      "expected_sources": [
+        "data/unstructured/emails/customer_001_sincronizacao.txt",
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/meetings/2026-01-product_roadmap.md",
+        "data/unstructured/meetings/2026-03-sales_enterprise_feedback.md"
+      ],
+      "expected_metadata": {
+        "customer_id": "CUST001"
+      },
+      "ground_truth_answer": "O Supermercado Boa Compra (CUST001 / MG) enfrenta atraso na sincronização de estoque de hortifruti e mercadorias entre a Matriz em BH e a filial Savassi. No e-mail e no ticket TCK-1001, a gerência cobra a solução. Na reunião de roadmap de Jan/2026, Carlos Mendes ficou de propor uma solução para o lock do banco. Na reunião de vendas de Mar/2026, alertou-se que o cliente pode cancelar o contrato Enterprise se o problema não for sanado no trimestre.",
+      "key_points_for_evaluation": [
+        "Conectar e-mail customer_001 com ticket TCK-1001",
+        "Relacionar com as atas de reunião de Jan/2026 e Mar/2026",
+        "Mencionar o risco de cancelamento do contrato Enterprise"
+      ],
+      "retrieved_sources": [
+        "2026-03-sales_enterprise_feedback.md",
+        "customers.csv",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199053, Requested 2914. Please try again in 14m9.744s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q09",
+      "category": "Múltiplas Fontes (Multi-hop)",
+      "question": "A cliente Ótica Visão Clara pediu cancelamento de contrato. Analise o e-mail enviado e determine se ela tem direito ao reembolso de acordo com a política da empresa.",
+      "expected_sources": [
+        "data/unstructured/emails/customer_002_reembolso_cancelamento.txt",
+        "data/unstructured/policies/reembolso.pdf",
+        "data/structured/customers.csv"
+      ],
+      "expected_metadata": {
+        "customer_id": "CUST0010"
+      },
+      "ground_truth_answer": "Sim, a cliente tem direito ao reembolso integral de 100%. No e-mail (customer_002), a Ótica Visão Clara solicita o cancelamento 5 dias após a contratação (contratou em 15/01/2026 e solicitou em 20/01/2026). Como a Política de Reembolso concede 7 dias de arrependimento com devolução total, o pedido está dentro do prazo legal.",
+      "key_points_for_evaluation": [
+        "Identificar o e-mail da Ótica Visão Clara",
+        "Verificar que se passaram 5 dias (dentro do prazo de 7 dias)",
+        "Concluir que a cliente tem direito ao reembolso integral"
+      ],
+      "retrieved_sources": [
+        "customer_002_reembolso_cancelamento.txt",
+        "customers.csv",
+        "reembolso.md",
+        "reembolso.pdf"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198694, Requested 2420. Please try again in 8m1.248s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q10",
+      "category": "Múltiplas Fontes (Multi-hop)",
+      "question": "Qual cliente possui a maior receita recorrente mensal (MRR) no estado de São Paulo e qual produto ele utiliza prioritariamente?",
+      "expected_sources": [
+        "data/structured/customers.csv"
+      ],
+      "expected_metadata": {
+        "state": "SP"
+      },
+      "ground_truth_answer": "O cliente em São Paulo (SP) com a maior receita mensal é a Auto Peças Central (CUST008), com MRR de R$ 3.100,00, cujo produto principal é o VendeFácil Pay.",
+      "key_points_for_evaluation": [
+        "Identificar Auto Peças Central em SP",
+        "Mencionar o MRR de R$ 3.100,00",
+        "Mencionar o produto VendeFácil Pay"
+      ],
+      "retrieved_sources": [
+        "2026-03-q1_results_exec_review.md",
+        "customers.csv"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198337, Requested 2555. Please try again in 6m25.344s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q11",
+      "category": "Razão & Solução de Problemas",
+      "question": "Por que o PDV exibe a mensagem 'Timeout de confirmação TEF' no cliente Auto Peças Central e qual é o procedimento técnico de solução?",
+      "expected_sources": [
+        "data/unstructured/documentation/pay/tef_e_maquininhas.md",
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/meetings/2026-02-engineering_outage_retrospective.md"
+      ],
+      "expected_metadata": {
+        "module": "pay"
+      },
+      "ground_truth_answer": "A mensagem 'Timeout de confirmação TEF' ocorre quando o firewall local do computador do caixa (Windows Firewall) bloqueia as conexões de entrada na porta TCP 6090. A solução técnica consiste em adicionar uma regra de exceção no firewall do sistema operacional liberando o tráfego de entrada na porta TCP 6090.",
+      "key_points_for_evaluation": [
+        "Identificar o bloqueio no Windows Firewall",
+        "Mencionar especificamente a porta TCP 6090",
+        "Explicar a liberação de exceção no firewall"
+      ],
+      "retrieved_sources": [
+        "manual_pdv.md",
+        "system_logs.csv",
+        "tickets.jsonl",
+        "troca_e_devolucao.md"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197981, Requested 2322. Please try again in 2m10.896s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    }
+  ]
+}

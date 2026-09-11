@@ -13,7 +13,12 @@ Le eval/results.json (gerado por eval/run_benchmark.py) e calcula:
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 from pathlib import Path
 from statistics import mean
 from typing import Any, Literal
@@ -24,6 +29,18 @@ import config
 
 RESULTS_PATH = Path(__file__).resolve().parent / "results.json"
 TRIAD_PATH = Path(__file__).resolve().parent / "triad_scores.json"
+RUNS_DIR = Path(__file__).resolve().parent / "runs"
+
+JUDGE_MAX_ATTEMPTS = 3
+JUDGE_RETRY_BACKOFF_SECONDS = 20.0
+
+# Quantas perguntas sao julgadas ao mesmo tempo. As avaliacoes sao
+# independentes, entao o unico limite real e a cota por minuto do provedor.
+JUDGE_MAX_WORKERS = int(os.getenv("JUDGE_MAX_WORKERS", "4"))
+
+# Reaproveita vereditos ja existentes em triad_scores.json. Permite interromper
+# a execucao e retomar sem pagar de novo pelo que ja foi avaliado.
+REUSAR_VEREDITOS = os.getenv("JUDGE_REUSAR", "1") != "0"
 
 JudgeLevel = Literal["Alta", "Media", "Baixa"]
 
@@ -103,12 +120,22 @@ def judge_answer(llm: Any, item: dict[str, Any]) -> JudgeVerdict:
     return JudgeVerdict.model_validate(verdict)
 
 
-def score_question(llm: Any, item: dict[str, Any]) -> dict[str, Any]:
-    """Calcula as tres metricas da RAG Triad para uma unica pergunta."""
+def score_question(
+    llm: Any, item: dict[str, Any], *, max_attempts: int = JUDGE_MAX_ATTEMPTS
+) -> dict[str, Any]:
+    """Calcula as tres metricas da RAG Triad para uma unica pergunta.
+
+    O julgamento por LLM tenta novamente com espera crescente, porque o tier
+    gratuito da Groq devolve 429 (rate limit por tokens/minuto) sob rajada.
+    Se todas as tentativas falharem, registra o erro e segue - uma pergunta
+    ruim nao pode derrubar a avaliacao inteira.
+    """
     scored: dict[str, Any] = {
         "id": item["id"],
         "category": item["category"],
         "context_relevance": context_relevance(item),
+        # amarra o veredito a resposta que ele julgou
+        "resposta_avaliada": impressao_da_resposta(item),
     }
 
     if item.get("error"):
@@ -117,11 +144,24 @@ def score_question(llm: Any, item: dict[str, Any]) -> dict[str, Any]:
         scored["judge_justification"] = f"Pulado: erro no pipeline ({item['error']})."
         return scored
 
-    verdict = judge_answer(llm, item)
-    scored["answer_relevance"] = _LEVEL_TO_SCORE[verdict.answer_relevance]
-    scored["groundedness"] = _LEVEL_TO_SCORE[verdict.groundedness]
-    scored["judge_justification"] = verdict.justification
-    return scored
+    for attempt in range(1, max_attempts + 1):
+        try:
+            verdict = judge_answer(llm, item)
+        except Exception as error:  # noqa: BLE001 - fronteira com a API do provedor
+            if attempt == max_attempts:
+                scored["answer_relevance"] = None
+                scored["groundedness"] = None
+                scored["judge_justification"] = f"Falha ao julgar: {error}"
+                return scored
+            time.sleep(JUDGE_RETRY_BACKOFF_SECONDS * attempt)
+            continue
+
+        scored["answer_relevance"] = _LEVEL_TO_SCORE[verdict.answer_relevance]
+        scored["groundedness"] = _LEVEL_TO_SCORE[verdict.groundedness]
+        scored["judge_justification"] = verdict.justification
+        return scored
+
+    raise AssertionError("inalcancavel")
 
 
 def _average(values: list[float | None]) -> float | None:
@@ -138,21 +178,130 @@ def summarize_triad(scores: list[dict[str, Any]]) -> dict[str, float | None]:
     }
 
 
+def _save(scores: list[dict[str, Any]], *, archive_path: Path | None = None) -> None:
+    """Grava a avaliacao corrente e, opcionalmente, uma copia datada.
+
+    A copia existe pelo mesmo motivo do arquivamento em run_benchmark.py: uma
+    reexecucao sobrescreve o arquivo, e medicoes boas ja foram perdidas assim.
+    """
+    payload = json.dumps(
+        {"scores": scores, "summary": summarize_triad(scores)},
+        indent=2,
+        ensure_ascii=False,
+    )
+    TRIAD_PATH.write_text(payload, encoding="utf-8")
+    if archive_path is not None:
+        archive_path.write_text(payload, encoding="utf-8")
+
+
+def impressao_da_resposta(item: dict[str, Any]) -> str:
+    """Identifica a resposta julgada, para nao reusar veredito de outra saida."""
+    conteudo = json.dumps(
+        {
+            "answer": item.get("answer"),
+            "is_refusal": item.get("is_refusal"),
+            "refusal_reason": item.get("refusal_reason"),
+            "sources_used": item.get("sources_used"),
+            "error": item.get("error"),
+        },
+        sort_keys=True,
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(conteudo.encode("utf-8")).hexdigest()[:16]
+
+
+def carregar_vereditos_existentes(results: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Le avaliacoes ja feitas, para nao pagar de novo pelo que ja foi julgado.
+
+    Duas condicoes para reaproveitar. O veredito precisa estar completo - uma
+    pergunta que ficou sem nota porque o juiz falhou e reavaliada. E a resposta
+    precisa ser a mesma: o veredito guarda a impressao digital da saida que
+    julgou, entao reexecutar o benchmark invalida automaticamente os vereditos
+    das respostas que mudaram. Sem isso, o reaproveitamento silenciosamente
+    misturaria a nota de uma resposta com o texto de outra.
+    """
+    if not TRIAD_PATH.exists():
+        return {}
+    try:
+        anteriores = json.loads(TRIAD_PATH.read_text(encoding="utf-8"))["scores"]
+    except (json.JSONDecodeError, KeyError):
+        return {}
+
+    impressoes = {item["id"]: impressao_da_resposta(item) for item in results}
+    aproveitaveis = {}
+    for s in anteriores:
+        completo = s.get("answer_relevance") is not None or str(
+            s.get("judge_justification", "")
+        ).startswith("Pulado")
+        mesma_resposta = s.get("resposta_avaliada") == impressoes.get(s["id"])
+        if completo and mesma_resposta:
+            aproveitaveis[s["id"]] = s
+    return aproveitaveis
+
+
 def main() -> None:
     results = json.loads(RESULTS_PATH.read_text(encoding="utf-8"))["results"]
     llm = config.get_llm()
 
-    scores = [score_question(llm, item) for item in results]
+    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    carimbo = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    archive_path = RUNS_DIR / f"triad-{carimbo}.json"
+
+    aproveitados = carregar_vereditos_existentes(results) if REUSAR_VEREDITOS else {}
+    pendentes = [item for item in results if item["id"] not in aproveitados]
+    if aproveitados:
+        print(
+            f"Reaproveitando {len(aproveitados)} veredito(s) ja existente(s); "
+            f"julgando {len(pendentes)}."
+        )
+
+    # As perguntas sao independentes entre si, entao sao julgadas em paralelo.
+    # A execucao serial com pausa fixa levava ~4 min no melhor caso e passava de
+    # 20 min quando a cota estava apertada. O numero de trabalhadores e baixo de
+    # proposito: paralelismo demais estoura o limite de tokens por minuto e o
+    # backoff devolve o tempo economizado.
+    julgados: dict[str, dict[str, Any]] = {}
+    total = len(pendentes)
+    if total:
+        with ThreadPoolExecutor(max_workers=JUDGE_MAX_WORKERS) as executor:
+            futuros = {
+                executor.submit(score_question, llm, item): item for item in pendentes
+            }
+            for concluidos, futuro in enumerate(as_completed(futuros), start=1):
+                item = futuros[futuro]
+                julgados[item["id"]] = futuro.result()
+                print(f"[{concluidos}/{total}] julgado {item['id']}")
+                # salva o parcial na ordem original, para nao perder progresso
+                _save(
+                    [
+                        julgados.get(r["id"]) or aproveitados.get(r["id"])
+                        for r in results
+                        if r["id"] in julgados or r["id"] in aproveitados
+                    ],
+                    archive_path=archive_path,
+                )
+
+    scores = [
+        julgados.get(item["id"]) or aproveitados[item["id"]]
+        for item in results
+        if item["id"] in julgados or item["id"] in aproveitados
+    ]
+    _save(scores, archive_path=archive_path)
+
+    nao_avaliadas = [s["id"] for s in scores if s["answer_relevance"] is None and not str(
+        s.get("judge_justification", "")
+    ).startswith("Pulado")]
+    if nao_avaliadas:
+        print(
+            "\nATENCAO: o juiz nao conseguiu avaliar {} pergunta(s): {}".format(
+                len(nao_avaliadas), ", ".join(nao_avaliadas)
+            )
+        )
+        print("A pontuacao calculada sobre esta avaliacao sera parcial.")
+
     summary = summarize_triad(scores)
 
-    TRIAD_PATH.write_text(
-        json.dumps(
-            {"scores": scores, "summary": summary}, indent=2, ensure_ascii=False
-        ),
-        encoding="utf-8",
-    )
-
-    print("RAG Triad - medias gerais:")
+    print("\nRAG Triad - medias gerais:")
     for metric, value in summary.items():
         print(f"  {metric}: {value:.2f}" if value is not None else f"  {metric}: N/A")
     print(f"\nDetalhes por pergunta salvos em: {TRIAD_PATH}")

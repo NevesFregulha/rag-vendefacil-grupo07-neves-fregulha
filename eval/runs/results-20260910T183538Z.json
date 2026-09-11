@@ -1,10 +1,9 @@
 {
-  "generated_at": "2026-09-11T00:33:03.324463+00:00",
+  "generated_at": "2026-09-10T18:46:57.615277+00:00",
   "provider": "groq",
   "model": "openai/gpt-oss-120b",
   "retrieval_k": 5,
   "total_questions": 24,
-  "composicao": "results-20260910T183538Z.json com Q22 regenerada em 20260911T003303Z (falhara por cota)",
   "results": [
     {
       "id": "Q01",
@@ -857,20 +856,13 @@
         "seguranca_lgpd.md",
         "seguranca_lgpd.pdf"
       ],
-      "answer": "A Política de Home Office estabelece que **o uso de VPN corporativa criptografada é obrigatório** para que o colaborador acesse servidores de banco de dados, repositórios de código e demais sistemas internos, garantindo a conectividade segura ao ambiente corporativo. Não há, nos trechos recuperados, menção a requisitos específicos de disponibilidade (como níveis de uptime, SLA ou horário de funcionamento), indicando que a política não define exigências formais de disponibilidade para o trabalho remoto.",
-      "confidence_level": "Alta",
-      "is_refusal": false,
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
       "refusal_reason": null,
-      "reasoning": "Identifiquei no documento de política de Home Office a cláusula que determina o uso obrigatório de VPN criptografada, que corresponde ao requisito de conectividade. Não encontrei nenhum trecho que descreva requisitos de disponibilidade, portanto informo a ausência dessa informação na política.",
-      "sources_used": [
-        {
-          "filepath": "home_office.md",
-          "chunk_id": "md-home_office-secao-3-parte-1",
-          "quotation": "O uso de VPN corporativa criptografada é obrigatório para acesso a servidores de banco de dados, repositórios de código e sistemas internos.",
-          "doc_type": "policy"
-        }
-      ],
-      "error": null
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198164, Requested 3274. Please try again in 10m21.216s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
     },
     {
       "id": "Q23",
