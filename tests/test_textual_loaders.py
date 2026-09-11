@@ -53,6 +53,34 @@ class MarkdownLoaderTests(unittest.TestCase):
         self.assertTrue(any("Instalação" in doc.metadata["section"] for doc in documents))
         validate_documents(documents)
 
+    def test_deriva_module_da_pasta_da_documentacao(self) -> None:
+        """Regressao: manuais sem `module` eram excluidos de buscas filtradas.
+
+        Somente `log` e `ticket` carregavam o campo, entao um filtro module=pdv
+        eliminava o manual_pdv.md por construcao - justamente o arquivo que
+        responde a pergunta.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "documentation" / "pdv" / "manual_pdv.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("# PDV\n\n## Sangria\n\nPressione F8.\n", encoding="utf-8")
+            documents = load_markdown_file(path)
+
+        self.assertTrue(documents)
+        self.assertTrue(all(doc.metadata["module"] == "pdv" for doc in documents))
+        validate_documents(documents)
+
+    def test_ata_e_politica_continuam_sem_module(self) -> None:
+        """`module` nao e propriedade de uma ata: nao deve ser inventado."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "meetings" / "2026-02-retro.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("# Retro\n\nDecisoes aprovadas.\n", encoding="utf-8")
+            documents = load_markdown_file(path)
+
+        self.assertTrue(documents)
+        self.assertTrue(all("module" not in doc.metadata for doc in documents))
+
 
 class TextLoaderTests(unittest.TestCase):
     def test_marks_customer_email_with_credentials_as_restricted(self) -> None:

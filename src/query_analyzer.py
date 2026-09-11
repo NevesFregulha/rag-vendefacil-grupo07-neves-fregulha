@@ -124,8 +124,25 @@ def _extract_state(question: str, question_lower: str) -> str | None:
     return None
 
 
+# O nome oficial do produto e uma referencia inequivoca ao modulo; um substantivo
+# comum nao e. Em "regra de Safety Stock (estoque de seguranca) no VendeFacil
+# Loja", o alias "estoque" casava antes e o filtro ia para o modulo errado,
+# excluindo justamente a documentacao do ecommerce que responde a pergunta.
+# Por isso os nomes de produto sao consultados primeiro.
+PRODUCT_MODULE_ALIASES: dict[str, str] = {
+    "vendefacil pdv": "pdv",
+    "vendefacil estoque": "estoque",
+    "vendefacil loja": "ecommerce",
+    "vendefacil analytics": "analytics",
+    "vendefacil pay": "pay",
+}
+
+
 def _extract_module(question_lower: str) -> str | None:
     normalized = _strip_accents(question_lower)
+    for alias, module in PRODUCT_MODULE_ALIASES.items():
+        if _strip_accents(alias) in normalized:
+            return module
     for alias, module in MODULE_ALIASES.items():
         if _strip_accents(alias) in normalized:
             return module
