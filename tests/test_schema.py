@@ -4,7 +4,7 @@ import unittest
 
 from pydantic import ValidationError
 
-from src.schema import RAGResponse, SourceEvidence
+from src.schema import CITATION_MAX_LENGTH, RAGResponse, SourceEvidence
 
 
 def build_evidence(**overrides) -> SourceEvidence:
@@ -44,6 +44,45 @@ class SourceEvidenceTests(unittest.TestCase):
         evidence = build_evidence(quotation="  texto com espaços  ")
 
         self.assertEqual(evidence.quotation, "texto com espaços")
+
+    def test_trunca_citacao_longa_em_vez_de_rejeitar(self) -> None:
+        """Regressao: citacao longa derrubava a resposta inteira.
+
+        O limite era `max_length` no Field, o que o punha no JSON Schema enviado
+        ao provedor; a Groq entao rejeitava a chamada com HTTP 400 e a pergunta
+        virava erro. Agora o limite e aplicado truncando no cliente.
+        """
+        trecho = "a" * (CITATION_MAX_LENGTH + 200)
+
+        evidence = build_evidence(quotation=trecho)
+
+        self.assertEqual(len(evidence.quotation), CITATION_MAX_LENGTH)
+
+    def test_citacao_truncada_continua_subtrecho_literal(self) -> None:
+        """O truncamento nao pode inserir reticencias.
+
+        `_validate_evidence()` exige que a citacao seja subtrecho literal do
+        chunk de origem; qualquer caractere acrescentado invalidaria a checagem.
+        """
+        conteudo_do_chunk = "inicio " + "b" * (CITATION_MAX_LENGTH + 100) + " fim"
+
+        evidence = build_evidence(quotation=conteudo_do_chunk)
+
+        self.assertIn(evidence.quotation, conteudo_do_chunk)
+
+    def test_aceita_recusa_por_falta_de_evidencia(self) -> None:
+        """SEM_EVIDENCIA existe para nao rotular como fora de escopo uma
+        pergunta legitima cuja resposta nao foi recuperada."""
+        resposta = build_response(
+            answer="Nao encontrei essa informacao no contexto recuperado.",
+            confidence_level="Recusado",
+            sources_used=[],
+            is_refusal=True,
+            refusal_reason="SEM_EVIDENCIA",
+        )
+
+        self.assertTrue(resposta.is_refusal)
+        self.assertEqual(resposta.refusal_reason, "SEM_EVIDENCIA")
 
     def test_rejects_missing_chunk_id(self) -> None:
         with self.assertRaises(ValidationError):

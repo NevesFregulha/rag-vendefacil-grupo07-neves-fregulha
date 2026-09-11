@@ -4,7 +4,7 @@ Projeto desenvolvido para o Mini Desafio de Assistente RAG Corporativo da VendeF
 
 ## Contexto
 
-A VendeFácil fornece soluções de automação comercial para pequenos e médios varejistas. O projeto constrói uma base de conhecimento capaz de processar fontes internas da empresa, recuperar informações relevantes e, nas próximas etapas, responder perguntas com evidências e proteção de dados.
+A VendeFácil fornece soluções de automação comercial para pequenos e médios varejistas. O projeto constrói um assistente RAG capaz de processar fontes internas da empresa, recuperar informações relevantes com busca híbrida e filtros por metadados, e responder perguntas com evidências citadas e proteção de dados conforme a LGPD. A avaliação final está em [`RELATORIO.md`](RELATORIO.md).
 
 Os principais produtos da empresa são:
 
@@ -57,26 +57,46 @@ rag-vendefacil-grupo07-neves-fregulha/
 │       ├── emails/
 │       ├── meetings/
 │       └── policies/
+├── benchmark/
+│   └── questions_and_ground_truth.json   ← 24 perguntas com gabarito (Etapa 4)
 ├── src/
-│   ├── ingest.py
+│   ├── ingest.py            ← Etapa 1: ingestão
 │   ├── metadata.py
 │   ├── sanity_check.py
 │   ├── vectorstore.py
-│   └── loaders/
-│       ├── structured.py
-│       ├── log_loader.py
-│       ├── jsonl_loader.py
-│       ├── markdown_loader.py
-│       ├── pdf_loader.py
-│       └── text_loader.py
-├── tests/
-│   ├── test_structured.py
-│   ├── test_textual_loaders.py
-│   ├── test_log_loader.py
-│   ├── test_ingest.py
-│   └── test_vectorstore.py
+│   ├── loaders/
+│   │   ├── structured.py
+│   │   ├── log_loader.py
+│   │   ├── jsonl_loader.py
+│   │   ├── markdown_loader.py
+│   │   ├── pdf_loader.py
+│   │   └── text_loader.py
+│   ├── query_analyzer.py    ← Etapa 2: filtros extraídos da pergunta
+│   ├── retrieve.py          ← Etapa 2: busca híbrida (FAISS + BM25, RRF)
+│   ├── retrieval_check.py   ← Etapa 2: comparativo com e sem filtro
+│   ├── schema.py            ← Etapa 3: modelos Pydantic
+│   ├── policy.py            ← Etapa 3: política de LGPD e escopo
+│   └── rag.py               ← Etapa 3: pipeline de geração estruturada
+├── eval/
+│   ├── run_benchmark.py     ← Etapa 4: executa o benchmark
+│   ├── judge_prompt.py      ← Etapa 4: RAG Triad (LLM-as-judge)
+│   ├── score.py             ← Etapa 4: nota pela rubrica do guia
+│   ├── retrieval_score.py   ← Etapa 4: mede a recuperação sem LLM
+│   ├── check_providers.py   ← Etapa 4: verifica cota dos provedores
+│   ├── results.json
+│   ├── triad_scores.json
+│   └── runs/                ← histórico datado das medições
+├── tests/                   ← 16 arquivos de teste, um por módulo
 ├── starter/
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── schema.py
+├── app.py                   ← Etapa 4: interface Streamlit
+├── config.py                ← provedor de LLM e parâmetros
+├── .env.example
+├── requirements.txt
+├── ACOMPANHAMENTO.md
+├── RELATORIO.md             ← Etapa 4: resultados e diagnóstico
+├── RESULTADOS_ETAPA2.md
 └── README.md
 ```
 
@@ -286,7 +306,7 @@ As regras de `decide_policy()` derivam diretamente de `data/unstructured/policie
 | Nível | Quando ocorre | Resultado |
 |---|---|---|
 | `recusar` | Pergunta fora do domínio VendeFácil, ou pede diretamente dado protegido (salário, CPF, dados de saúde) ou credencial (senha, cartão, chave de API) | `is_refusal=True`, com `refusal_reason` em `OUT_OF_DOMAIN`, `LGPD_PROTECTION` ou `CREDENTIAL_PROTECTION`; a recusa ocorre **antes** da busca, sem consultar o índice |
-| `mascarar` | Pergunta legítima, mas alguma fonte recuperada tem `sensitivity="restrito"` | O conteúdo dos chunks é mascarado (`mask_sensitive_text`) antes de ir para o contexto do LLM — CPF, cartão, CVV, e-mail e telefone nunca chegam ao prompt em texto puro |
+| `mascarar` | Pergunta legítima, mas alguma fonte recuperada tem `sensitivity="restrito"` | O conteúdo dos chunks é mascarado (`mask_sensitive_text`) antes de ir para o contexto do LLM — CPF, cartão, CVV, e-mail, telefone e valor de salário nunca chegam ao prompt em texto puro |
 | `responder` | Pergunta e fontes dentro da política | Segue o fluxo normal |
 
 O vocabulário de domínio (`DOMAIN_KEYWORDS`) foi ampliado durante a validação: perguntas como "Qual a média salarial da equipe de suporte?" inicialmente caíam em `OUT_OF_DOMAIN` porque "suporte" e "equipe" não estavam cobertos; o termo salarial correto (`LGPD_PROTECTION`) só passou a prevalecer depois de incluir esses termos no vocabulário.
@@ -325,6 +345,132 @@ Resultado obtido ao final da Etapa 3:
 81 passed, 16 subtests passed
 ```
 
-## Próximas etapas
+Ao final da Etapa 4, após as correções diagnosticadas em [`RELATORIO.md`](RELATORIO.md) e os testes de regressão que as acompanham:
 
-- **Etapa 4:** benchmark, relatório de falhas e interface de demonstração.
+```text
+130 passed, 22 subtests passed
+```
+
+## Etapa 4 — Avaliação (RAG Triad), interface e relatório
+
+### Configurar o provedor de LLM
+
+As etapas 1 e 2 rodam sem chave de API (embeddings locais). A partir da Etapa 3, a geração de respostas exige um LLM. Copie o arquivo de exemplo e preencha a chave:
+
+```powershell
+copy .env.example .env
+```
+
+O `.env` **nunca** é commitado (já está no `.gitignore`). As variáveis lidas por `config.py` são:
+
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `LLM_PROVIDER` | não | `openrouter` (padrão), `groq` ou `anthropic` |
+| `OPENROUTER_API_KEY` | se `LLM_PROVIDER=openrouter` | Chave em [openrouter.ai/keys](https://openrouter.ai/keys) |
+| `GROQ_API_KEY` | se `LLM_PROVIDER=groq` | Chave gratuita em [console.groq.com/keys](https://console.groq.com/keys) |
+| `ANTHROPIC_API_KEY` | se `LLM_PROVIDER=anthropic` | Chave em [console.anthropic.com](https://console.anthropic.com) |
+| `LLM_MODEL` | não | Padrão por provedor: `nex-agi/nex-n2.5-pro:free` (OpenRouter), `openai/gpt-oss-120b` (Groq) ou `claude-opus-5` (Anthropic) |
+| `RETRIEVAL_K` | não | Chunks recuperados por pergunta (padrão `5`) |
+| `MAX_GENERATION_ATTEMPTS` | não | Tentativas de geração estruturada (padrão `3`) |
+
+O provedor padrão é o OpenRouter, com o modelo gratuito fixo `nex-agi/nex-n2.5-pro:free`, que não exige cartão de crédito. O roteador `openrouter/free` não é usado: ele escolhe um modelo diferente a cada chamada, e parte deles falha na saída estruturada. A troca de provedor é só uma variável de ambiente: `src/rag.py` recebe o modelo já construído e não conhece nenhum SDK específico.
+
+Observações práticas sobre o OpenRouter:
+
+- **O limite diário é da conta, não do modelo.** Contas que nunca compraram créditos têm cerca de 50 requisições gratuitas por dia, somando todos os modelos `:free`. Um ciclo completo de medição (benchmark + juiz) passa desse limite; para a interface de demonstração ele sobra.
+- **Saldo negativo bloqueia até os modelos gratuitos.** Confira em [openrouter.ai/settings/credits](https://openrouter.ai/settings/credits) antes de executar.
+- **Nem todo modelo `:free` serve.** O pipeline usa `with_structured_output`, que exige suporte a *tool calling*. Verifique o campo `supported_parameters` em `https://openrouter.ai/api/v1/models`.
+
+Para saber quais modelos têm cota disponível no momento, sem gastar cota relevante:
+
+```powershell
+.\venv\Scripts\python.exe -m eval.check_providers
+```
+
+As medições registradas em [`RELATORIO.md`](RELATORIO.md) foram feitas na Groq com `openai/gpt-oss-120b`. Para reproduzi-las, use `LLM_PROVIDER=groq`.
+
+> **Nota para Windows:** se aparecer `SSL: CERTIFICATE_VERIFY_FAILED` ao chamar a API, o antivírus ou proxy está interceptando o certificado e o Python não reconhece a autoridade. Instale `pip install pip-system-certs` para que o Python use o repositório de certificados do próprio Windows.
+
+### Executar o benchmark
+
+Requer o índice FAISS criado (`python -m src.vectorstore`):
+
+```powershell
+.\venv\Scripts\python.exe -m eval.run_benchmark
+```
+
+Executa todas as perguntas de `benchmark/questions_and_ground_truth.json`, grava `eval/results.json` e imprime a tabela resumo por categoria. O executor não assume quantidade fixa de perguntas e salva o progresso a cada pergunta.
+
+Cada execução também é arquivada com data em `eval/runs/`, para que uma reexecução não sobrescreva uma medição anterior — isso já aconteceu uma vez e custou uma medição boa. Erros de rate limit (HTTP 429) são repetidos com espera crescente, para que um estouro de cota não seja contado como defeito do pipeline.
+
+> **Cota do tier gratuito.** A Groq limita 200.000 tokens por dia **por modelo**, recarregados continuamente (cerca de 8.300 por hora), e não zerados num horário fixo. Medido pelo tamanho real dos prompts, uma execução do benchmark consome cerca de 89.000 tokens e uma do juiz cerca de 33.000 — **cerca de 123.000 por ciclo completo, menos de dois ciclos por dia**. Ao esgotar a cota de um modelo, é possível trocar `LLM_MODEL` por outro (por exemplo `openai/gpt-oss-20b`), que tem cota própria; nesse caso os resultados deixam de ser diretamente comparáveis aos de execuções anteriores.
+
+### Calcular a RAG Triad
+
+```powershell
+.\venv\Scripts\python.exe -m eval.judge_prompt
+```
+
+Lê o `eval/results.json` e grava `eval/triad_scores.json` com Context Relevance (determinística), Answer Relevance e Groundedness (LLM-as-judge). O juiz avalia 4 perguntas em paralelo e reaproveita vereditos de respostas que não mudaram — cada veredito guarda a impressão digital da resposta que julgou, então uma resposta nova é sempre reavaliada. Cada execução também é arquivada em `eval/runs/`.
+
+### Calcular a nota pela rubrica do guia
+
+```powershell
+.\venv\Scripts\python.exe -m eval.score
+```
+
+Aplica a rubrica de 1,0 ponto por questão (0,5 resposta correta, 0,3 citação no arquivo certo, 0,2 coerência entre `confidence_level` e `is_refusal`) e imprime a nota por questão e por categoria. Questões que o juiz não conseguiu avaliar (por exemplo, por estouro de cota) são contadas à parte, e a nota é exibida como intervalo em vez de tratá-las como zero.
+
+### Medir a recuperação sem LLM
+
+```powershell
+.\venv\Scripts\python.exe -m eval.retrieval_score
+```
+
+Calcula a Context Relevance comparando as fontes recuperadas com as `expected_sources` do gabarito, sem chamar LLM e sem gastar cota. Foi a ferramenta usada para validar as mudanças de recuperação descritas no relatório.
+
+### Resultados
+
+| Métrica | Valor |
+|---|---:|
+| Nota pela rubrica | **71,9%** (17,25 / 24) |
+| Context Relevance | 0,89 |
+| Answer Relevance | 0,54 |
+| Groundedness | 0,73 |
+
+Medido com `openai/gpt-oss-120b` na Groq, com as 24 perguntas avaliadas. O diagnóstico das falhas, a evolução da nota e as limitações da avaliação estão em [`RELATORIO.md`](RELATORIO.md).
+
+### Interface de demonstração
+
+A interface usa Streamlit e conversa com o pipeline real (busca híbrida, política de LGPD e geração estruturada validada por Pydantic).
+
+O Streamlit já está em `requirements.txt`; se o ambiente foi criado antes desta etapa, reinstale as dependências:
+
+```powershell
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Execução:
+
+```powershell
+.\venv\Scripts\python.exe -m streamlit run app.py
+```
+
+A aplicação abre em `http://localhost:8501`. Antes de rodar, confirme que o índice FAISS existe (`python -m src.vectorstore`) e que o `.env` está preenchido.
+
+Recursos da interface:
+
+- histórico de conversa com `st.session_state` e `st.chat_message`;
+- botões com perguntas de exemplo, incluindo uma que dispara o guardrail de LGPD;
+- para cada resposta: nível de confiança, evidências citadas (arquivo + `chunk_id` + trecho literal) e o raciocínio;
+- recusas aparecem destacadas, com o motivo traduzido;
+- o índice FAISS e o modelo de embeddings são carregados uma única vez por sessão (`st.cache_resource`), para a demo não travar a cada pergunta.
+
+## Próximos passos
+
+Com mais tempo, em ordem de retorno (detalhes na seção 5 do [`RELATORIO.md`](RELATORIO.md)):
+
+- **Chunking de títulos:** evitar chunks que contêm só o título do documento, que ocupam a vaga da seção com a resposta (Q04, Q12).
+- **Respostas parciais:** oito questões encontram a fonte certa e respondem de forma incompleta.
+- **Repetir cada medição três vezes**, para separar efeito real de variação do modelo.
+- **Q02:** exige ajuste na representação vetorial dos arquivos estruturados.

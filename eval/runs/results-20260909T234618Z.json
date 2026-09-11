@@ -1,0 +1,216 @@
+{
+  "generated_at": "2026-09-09T23:59:13.708821+00:00",
+  "total_questions": 6,
+  "results": [
+    {
+      "id": "Q01",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quais são os produtos oferecidos pela empresa VendeFácil?",
+      "expected_sources": [
+        "data/structured/products.json"
+      ],
+      "expected_metadata": {
+        "doc_type": "structured",
+        "format": "json"
+      },
+      "ground_truth_answer": "A VendeFácil oferece 5 produtos principais: 1) VendeFácil PDV (ponto de venda e frente de caixa); 2) VendeFácil Estoque (gestão de inventário e suprimentos); 3) VendeFácil Loja (e-commerce e catálogo digital); 4) VendeFácil Analytics (inteligência de negócios e DRE); 5) VendeFácil Pay (meios de pagamento e TEF).",
+      "key_points_for_evaluation": [
+        "Mencionar os 5 produtos principais",
+        "Breve descrição de cada produto"
+      ],
+      "retrieved_sources": [
+        "customer_006_duvida_inventario_cego.txt",
+        "products.json",
+        "sales.csv"
+      ],
+      "answer": "A VendeFácil oferece os seguintes produtos:\n- VendeFácil PDV (sistema de ponto de venda e frente de caixa);\n- VendeFácil Analytics (dashboard executivo e inteligência de negócios);\n- VendeFácil Loja (plataforma omnicanal de e‑commerce e catálogo digital);\n- VendeFácil Estoque (gestão avançada de inventário e suprimentos);\n- VendeFácil Pay (solução de meios de pagamento e TEF).",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "Os registros de produtos recuperados listam cinco entradas distintas, cada uma contendo o campo 'name' que identifica o nome comercial do produto oferecido pela VendeFácil. Ao extrair esses nomes, obtém‑se a lista completa dos produtos disponíveis.",
+      "sources_used": [
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PDV-1",
+          "quotation": "product_id: PROD-PDV, name: VendeFácil PDV, category: Ponto de Venda & Frente de Caixa",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ANALYTICS-4",
+          "quotation": "product_id: PROD-ANALYTICS, name: VendeFácil Analytics, category: Inteligência de Negócios e Gestão Financeira",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-LOJA-3",
+          "quotation": "product_id: PROD-LOJA, name: VendeFácil Loja, category: E-commerce e Catálogo Digital",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ESTOQUE-2",
+          "quotation": "product_id: PROD-ESTOQUE, name: VendeFácil Estoque, category: Gestão de Inventário e Suprimentos",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PAY-5",
+          "quotation": "product_id: PROD-PAY, name: VendeFácil Pay, category: Meios de Pagamento e TEF",
+          "doc_type": "product"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q02",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quem é o responsável técnico (Tech Lead) e a gerente de produto (PM) do VendeFácil Estoque?",
+      "expected_sources": [
+        "data/structured/products.json",
+        "data/structured/employees.csv"
+      ],
+      "expected_metadata": {
+        "module": "estoque"
+      },
+      "ground_truth_answer": "O Tech Lead (responsável técnico) do VendeFácil Estoque é Carlos Mendes e a Product Manager (PM) responsável é Ana Souza.",
+      "key_points_for_evaluation": [
+        "Tech Lead: Carlos Mendes",
+        "PM: Ana Souza"
+      ],
+      "retrieved_sources": [
+        "codigo_de_conduta.md",
+        "customers.csv",
+        "importacao_nfe_xml.md",
+        "inventario.md",
+        "seguranca_lgpd.pdf",
+        "sincronizacao_estoque.md",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198607, Requested 2962. Please try again in 11m17.808s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q03",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é o prazo de arrependimento para reembolso integral de 100% no cancelamento de planos da VendeFácil?",
+      "expected_sources": [
+        "data/unstructured/policies/reembolso.pdf",
+        "data/unstructured/policies/reembolso.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "topic": "reembolso"
+      },
+      "ground_truth_answer": "O prazo para reembolso integral de 100% do valor pago é de até 7 dias corridos após a contratação inicial, conforme o Código de Defesa do Consumidor e a Política de Reembolso da empresa.",
+      "key_points_for_evaluation": [
+        "Prazo de 7 dias corridos",
+        "Reembolso integral de 100%"
+      ],
+      "retrieved_sources": [
+        "customer_002_reembolso_cancelamento.txt",
+        "customer_017_cancelamento_plano_basic.txt",
+        "reembolso.md",
+        "reembolso.pdf"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198247, Requested 2283. Please try again in 3m48.96s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q04",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é a política de home office para os funcionários da equipe de Engenharia?",
+      "expected_sources": [
+        "data/unstructured/policies/home_office.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "department": "engenharia"
+      },
+      "ground_truth_answer": "A equipe de Engenharia funciona no modelo Remoto First (100% Home Office), com encontros presenciais trimestrais na matriz da empresa.",
+      "key_points_for_evaluation": [
+        "Modelo Remoto First / 100% Home Office",
+        "Encontros presenciais trimestrais"
+      ],
+      "retrieved_sources": [
+        "employees.csv",
+        "home_office.md"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199606, Requested 1818. Please try again in 10m15.168s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q05",
+      "category": "Filtragem por Metadados",
+      "question": "Quais tickets de suporte foram abertos por clientes do estado de Minas Gerais (MG) para o módulo de estoque?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl"
+      ],
+      "expected_metadata": {
+        "state": "MG",
+        "module": "estoque"
+      },
+      "ground_truth_answer": "Foram abertos 3 tickets em Minas Gerais (MG) para o módulo de estoque: 1) TCK-1001 (Supermercado Boa Compra - Erro na sincronização entre matriz e filial Savassi); 2) TCK-1002 (Drogaria Vida & Saúde - Divergência na contagem de lote no inventário cego); 3) TCK-1004 (Materiais de Construção Silva - Lentidão ao importar XML de NF-e com mais de 200 itens).",
+      "key_points_for_evaluation": [
+        "Identificar os tickets TCK-1001, TCK-1002 e TCK-1004",
+        "Confirmar que são do estado de MG e do módulo de estoque"
+      ],
+      "retrieved_sources": [
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199249, Requested 2309. Please try again in 11m13.056s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q06",
+      "category": "Filtragem por Metadados",
+      "question": "Quais chamados com prioridade 'Crítica' foram registrados no sistema e qual é o SLA de solução para esse nível?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/policies/atendimento_sla.md"
+      ],
+      "expected_metadata": {
+        "priority": "Crítica"
+      },
+      "ground_truth_answer": "O ticket de prioridade Crítica registrado é o TCK-1005 (Auto Peças Central - Transação de TEF aprovada na maquininha porém não finaliza venda no PDV). O SLA de solução para severidade Crítica é de até 2 horas (com primeira resposta em até 15 minutos).",
+      "key_points_for_evaluation": [
+        "Identificar TCK-1005",
+        "SLA de resposta: 15 minutos",
+        "SLA de solução: 2 horas"
+      ],
+      "retrieved_sources": [
+        "atendimento_sla.md",
+        "reembolso.pdf",
+        "seguranca_lgpd.pdf",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198893, Requested 2591. Please try again in 10m41.088s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    }
+  ]
+}

@@ -83,5 +83,33 @@ class QueryAnalyzerTests(unittest.TestCase):
         self.assertEqual(validate_filters({"state": "AC"}, vocabulary), {})
 
 
+class NomeDeProdutoTemPrioridadeSobreSubstantivoTests(unittest.TestCase):
+    """Regressao: substantivo comum vencia o nome do produto na escolha do modulo.
+
+    Detectado no benchmark (Q18): "regra de Safety Stock (estoque de seguranca)
+    configuravel no VendeFacil Loja" era classificada como module=estoque,
+    porque o alias "estoque" casava antes. O filtro entao excluia
+    integracao_catalogo.md, que e a fonte da resposta e tem module=ecommerce.
+    """
+
+    def test_vendefacil_loja_vence_a_palavra_estoque(self) -> None:
+        pergunta = (
+            "Qual e a regra de 'Safety Stock' (estoque de seguranca) "
+            "configuravel no VendeFacil Loja?"
+        )
+
+        self.assertEqual(extract_filters(pergunta)["module"], "ecommerce")
+
+    def test_vendefacil_pay_vence_a_palavra_caixa(self) -> None:
+        pergunta = "O caixa relatou erro ao usar o VendeFacil Pay."
+
+        self.assertEqual(extract_filters(pergunta)["module"], "pay")
+
+    def test_substantivo_comum_ainda_funciona_sem_nome_de_produto(self) -> None:
+        self.assertEqual(
+            extract_filters("Quais tickets do modulo de estoque?")["module"], "estoque"
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,223 @@
+{
+  "generated_at": "2026-09-09T22:59:40.730933+00:00",
+  "total_questions": 6,
+  "results": [
+    {
+      "id": "Q01",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quais são os produtos oferecidos pela empresa VendeFácil?",
+      "expected_sources": [
+        "data/structured/products.json"
+      ],
+      "expected_metadata": {
+        "doc_type": "structured",
+        "format": "json"
+      },
+      "ground_truth_answer": "A VendeFácil oferece 5 produtos principais: 1) VendeFácil PDV (ponto de venda e frente de caixa); 2) VendeFácil Estoque (gestão de inventário e suprimentos); 3) VendeFácil Loja (e-commerce e catálogo digital); 4) VendeFácil Analytics (inteligência de negócios e DRE); 5) VendeFácil Pay (meios de pagamento e TEF).",
+      "key_points_for_evaluation": [
+        "Mencionar os 5 produtos principais",
+        "Breve descrição de cada produto"
+      ],
+      "retrieved_sources": [
+        "customer_006_duvida_inventario_cego.txt",
+        "products.json",
+        "sales.csv"
+      ],
+      "answer": "Os produtos oferecidos pela VendeFácil são:",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "A resposta é baseada exclusivamente nos cinco registros do tipo product presentes no contexto recuperado.",
+      "sources_used": [
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PDV-1",
+          "quotation": "product_id: PROD-PDV, name: VendeFácil PDV, category: Ponto de Venda & Frente de Caixa",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ANALYTICS-4",
+          "quotation": "product_id: PROD-ANALYTICS, name: VendeFácil Analytics, category: Inteligência de Negócios e Gestão Financeira",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-LOJA-3",
+          "quotation": "product_id: PROD-LOJA, name: VendeFácil Loja, category: E-commerce e Catálogo Digital",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ESTOQUE-2",
+          "quotation": "product_id: PROD-ESTOQUE, name: VendeFácil Estoque, category: Gestão de Inventário e Suprimentos",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PAY-5",
+          "quotation": "product_id: PROD-PAY, name: VendeFácil Pay, category: Meios de Pagamento e TEF",
+          "doc_type": "product"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q02",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quem é o responsável técnico (Tech Lead) e a gerente de produto (PM) do VendeFácil Estoque?",
+      "expected_sources": [
+        "data/structured/products.json",
+        "data/structured/employees.csv"
+      ],
+      "expected_metadata": {
+        "module": "estoque"
+      },
+      "ground_truth_answer": "O Tech Lead (responsável técnico) do VendeFácil Estoque é Carlos Mendes e a Product Manager (PM) responsável é Ana Souza.",
+      "key_points_for_evaluation": [
+        "Tech Lead: Carlos Mendes",
+        "PM: Ana Souza"
+      ],
+      "retrieved_sources": [
+        "codigo_de_conduta.md",
+        "customers.csv",
+        "importacao_nfe_xml.md",
+        "inventario.md",
+        "seguranca_lgpd.pdf",
+        "sincronizacao_estoque.md",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "O LLM nao gerou uma RAGResponse valida em 3 tentativa(s). tentativa 1: ValidationError: 1 validation error for RAGResponse\n  Value error, Toda resposta recusada (is_refusal=True) deve ter confidence_level='Recusado'. [type=value_error, input_value={'answer': 'Não é poss... com fila RabbitMQ).'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error | tentativa 2: ValidationError: 1 validation error for RAGResponse\n  Value error, Uma resposta recusada (is_refusal=True) não deve citar sources_used. [type=value_error, input_value={'answer': 'Não é poss... com fila RabbitMQ).'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error | tentativa 3: ValidationError: 1 validation error for RAGResponse\n  Value error, Toda resposta recusada (is_refusal=True) deve ter confidence_level='Recusado'. [type=value_error, input_value={'answer': 'Não é poss...IA', 'sources_used': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+    },
+    {
+      "id": "Q03",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é o prazo de arrependimento para reembolso integral de 100% no cancelamento de planos da VendeFácil?",
+      "expected_sources": [
+        "data/unstructured/policies/reembolso.pdf",
+        "data/unstructured/policies/reembolso.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "topic": "reembolso"
+      },
+      "ground_truth_answer": "O prazo para reembolso integral de 100% do valor pago é de até 7 dias corridos após a contratação inicial, conforme o Código de Defesa do Consumidor e a Política de Reembolso da empresa.",
+      "key_points_for_evaluation": [
+        "Prazo de 7 dias corridos",
+        "Reembolso integral de 100%"
+      ],
+      "retrieved_sources": [
+        "customer_002_reembolso_cancelamento.txt",
+        "customer_017_cancelamento_plano_basic.txt",
+        "reembolso.md",
+        "reembolso.pdf"
+      ],
+      "answer": "O prazo é de 7 dias corridos após a contratação inicial. Nesse período, novos assinantes têm direito ao reembolso integral de 100% dos valores pagos.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "A política de reembolso estabelece expressamente o direito de arrependimento de 7 dias para reembolso integral.",
+      "sources_used": [
+        {
+          "filepath": "reembolso.md",
+          "chunk_id": "md-reembolso-secao-2-parte-1",
+          "quotation": "1.2. **Direito de Arrependimento (7 dias):** Conforme o Código de Defesa do Consumidor, novos assinantes têm direito ao reembolso integral de 100% dos valores pagos caso a solicitação seja efetuada em até 7 dias corridos após a contratação inicial.",
+          "doc_type": "policy"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q04",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é a política de home office para os funcionários da equipe de Engenharia?",
+      "expected_sources": [
+        "data/unstructured/policies/home_office.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "department": "engenharia"
+      },
+      "ground_truth_answer": "A equipe de Engenharia funciona no modelo Remoto First (100% Home Office), com encontros presenciais trimestrais na matriz da empresa.",
+      "key_points_for_evaluation": [
+        "Modelo Remoto First / 100% Home Office",
+        "Encontros presenciais trimestrais"
+      ],
+      "retrieved_sources": [
+        "employees.csv",
+        "home_office.md"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "O LLM nao gerou uma RAGResponse valida em 3 tentativa(s). tentativa 1: ValidationError: 1 validation error for RAGResponse\n  Value error, refusal_reason só é permitido quando is_refusal=True. [type=value_error, input_value={'answer': 'Não é poss...REMOTO E HOME OFFICE'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error | tentativa 2: ValidationError: 1 validation error for RAGResponse\n  Value error, Toda resposta recusada (is_refusal=True) deve ter confidence_level='Recusado'. [type=value_error, input_value={'answer': 'Não é poss...MOTO E HOME OFFICE  '}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error | tentativa 3: ValidationError: 1 validation error for RAGResponse\n  Value error, Uma resposta recusada (is_refusal=True) não deve citar sources_used. [type=value_error, input_value={'answer': 'Não é poss...REMOTO E HOME OFFICE'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+    },
+    {
+      "id": "Q05",
+      "category": "Filtragem por Metadados",
+      "question": "Quais tickets de suporte foram abertos por clientes do estado de Minas Gerais (MG) para o módulo de estoque?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl"
+      ],
+      "expected_metadata": {
+        "state": "MG",
+        "module": "estoque"
+      },
+      "ground_truth_answer": "Foram abertos 3 tickets em Minas Gerais (MG) para o módulo de estoque: 1) TCK-1001 (Supermercado Boa Compra - Erro na sincronização entre matriz e filial Savassi); 2) TCK-1002 (Drogaria Vida & Saúde - Divergência na contagem de lote no inventário cego); 3) TCK-1004 (Materiais de Construção Silva - Lentidão ao importar XML de NF-e com mais de 200 itens).",
+      "key_points_for_evaluation": [
+        "Identificar os tickets TCK-1001, TCK-1002 e TCK-1004",
+        "Confirmar que são do estado de MG e do módulo de estoque"
+      ],
+      "retrieved_sources": [
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1788998400000'}, 'limit_source': 'openrouter_free_tier_daily', 'remedy_hint': 'Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.', 'provider_name': None}}, 'user_id': 'user_3HQ72dwWVPnkto7G3XI6ogBpY1V'}"
+    },
+    {
+      "id": "Q06",
+      "category": "Filtragem por Metadados",
+      "question": "Quais chamados com prioridade 'Crítica' foram registrados no sistema e qual é o SLA de solução para esse nível?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/policies/atendimento_sla.md"
+      ],
+      "expected_metadata": {
+        "priority": "Crítica"
+      },
+      "ground_truth_answer": "O ticket de prioridade Crítica registrado é o TCK-1005 (Auto Peças Central - Transação de TEF aprovada na maquininha porém não finaliza venda no PDV). O SLA de solução para severidade Crítica é de até 2 horas (com primeira resposta em até 15 minutos).",
+      "key_points_for_evaluation": [
+        "Identificar TCK-1005",
+        "SLA de resposta: 15 minutos",
+        "SLA de solução: 2 horas"
+      ],
+      "retrieved_sources": [
+        "atendimento_sla.md",
+        "reembolso.pdf",
+        "seguranca_lgpd.pdf",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1788998400000'}, 'limit_source': 'openrouter_free_tier_daily', 'remedy_hint': 'Wait for the daily reset (see X-RateLimit-Reset), or purchase credits to raise your free-model daily limit.', 'provider_name': None}}, 'user_id': 'user_3HQ72dwWVPnkto7G3XI6ogBpY1V'}"
+    }
+  ]
+}

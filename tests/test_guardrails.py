@@ -125,14 +125,16 @@ class GuardrailMascararIntegrationTests(unittest.TestCase):
         (
             "Confirme o cadastro do funcionario EMP001 no RH.",
             _document(
-                "Funcionario EMP001, CPF 123.456.789-00, e-mail joao@empresa.com.",
+                "Funcionario EMP001, CPF 123.456.789-00, e-mail joao@empresa.com, "
+                "salary: 16800.0.",
                 source_file="employees.csv",
                 chunk_id="employee-0001",
                 doc_type="employee",
                 sensitivity="restrito",
             ),
-            "Funcionario EMP001, CPF [CPF_MASCARADO], e-mail [EMAIL_MASCARADO].",
-            ("123.456.789-00", "joao@empresa.com"),
+            "Funcionario EMP001, CPF [CPF_MASCARADO], e-mail [EMAIL_MASCARADO], "
+            "salary: [SALARIO_MASCARADO].",
+            ("123.456.789-00", "joao@empresa.com", "16800"),
         ),
     ]
 

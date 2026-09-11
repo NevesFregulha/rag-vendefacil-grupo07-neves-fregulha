@@ -22,8 +22,12 @@ class _Vectorstore:
         self.docstore = _Docstore(documents)
 
     def similarity_search(self, question, *, k, fetch_k, filter):
+        # O FAISS do LangChain aceita `Callable` alem de `dict` como filtro; o
+        # dublê precisa suportar os dois para refletir a API real.
         documents = list(self.docstore.documents)
-        if filter:
+        if callable(filter):
+            documents = [d for d in documents if filter(d.metadata)]
+        elif filter:
             documents = [
                 document
                 for document in documents

@@ -28,7 +28,16 @@ DocType = Literal[
 
 ConfidenceLevel = Literal["Alta", "Média", "Baixa", "Recusado"]
 
-RefusalReason = Literal["LGPD_PROTECTION", "OUT_OF_DOMAIN", "CREDENTIAL_PROTECTION"]
+RefusalReason = Literal[
+    "LGPD_PROTECTION",
+    "OUT_OF_DOMAIN",
+    "CREDENTIAL_PROTECTION",
+    # Previsto no schema do guia e inicialmente omitido por nos. Sem ele, uma
+    # pergunta legitima cuja resposta nao foi recuperada era rotulada como
+    # OUT_OF_DOMAIN - factualmente falso, e confundia falha de recuperacao com
+    # pergunta fora de escopo no diagnostico.
+    "SEM_EVIDENCIA",
+]
 
 CITATION_MAX_LENGTH = 400
 
@@ -46,9 +55,8 @@ class SourceEvidence(BaseModel):
     )
     quotation: str = Field(
         min_length=1,
-        max_length=CITATION_MAX_LENGTH,
         description="Trecho exato do texto ou dado utilizado para fundamentar a afirmação (até "
-        f"{CITATION_MAX_LENGTH} caracteres).",
+        f"{CITATION_MAX_LENGTH} caracteres; trechos maiores são truncados).",
     )
     doc_type: Optional[DocType] = Field(
         default=None,
@@ -57,11 +65,25 @@ class SourceEvidence(BaseModel):
 
     @field_validator("quotation")
     @classmethod
-    def quotation_nao_pode_ser_so_espacos(cls, value: str) -> str:
+    def quotation_limpa_e_truncada(cls, value: str) -> str:
+        """Normaliza a citação, truncando em vez de rejeitar trechos longos.
+
+        O limite é aplicado aqui, e não como `max_length` no `Field`, de
+        propósito: `max_length` entraria no JSON Schema enviado ao provedor, e
+        provedores que validam a ferramenta no servidor (Groq) rejeitam a
+        chamada inteira com HTTP 400 quando o modelo cita um trecho longo. Uma
+        regra de apresentação derrubava a resposta toda. Truncando no cliente, o
+        objetivo do limite é preservado sem transformar verbosidade do modelo em
+        falha; o `chunk_id` continua permitindo recuperar o trecho completo.
+
+        O truncamento não acrescenta reticências porque `_validate_evidence()`
+        exige que a citação seja subtrecho literal do chunk de origem - qualquer
+        caractere extra invalidaria essa verificação.
+        """
         stripped = value.strip()
         if not stripped:
             raise ValueError("quotation não pode ser vazia ou conter apenas espaços.")
-        return stripped
+        return stripped[:CITATION_MAX_LENGTH]
 
 
 class RAGResponse(BaseModel):

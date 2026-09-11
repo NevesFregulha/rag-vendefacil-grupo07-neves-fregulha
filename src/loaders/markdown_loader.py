@@ -30,6 +30,27 @@ def _classification(path: Path) -> tuple[str, str]:
     return "manual", "publico"
 
 
+# A documentacao e organizada por modulo em disco (documentation/pdv/,
+# documentation/estoque/, ...), e esses nomes de pasta sao exatamente os valores
+# de `module` usados no restante do corpus.
+DOCUMENTATION_MODULES = frozenset({"pdv", "estoque", "ecommerce", "analytics", "pay"})
+
+
+def _module_from_path(path: Path) -> str | None:
+    """Deriva o `module` do manual a partir da pasta em que ele esta.
+
+    Sem isso, apenas `log` e `ticket` carregavam `module`, e qualquer busca
+    filtrada por modulo excluia os manuais por construcao - mesmo quando o
+    manual era a fonte da resposta. O metadado vai no campo de metadado, nao
+    apenas no caminho do arquivo.
+    """
+    for part in path.parts:
+        candidate = part.lower()
+        if candidate in DOCUMENTATION_MODULES:
+            return candidate
+    return None
+
+
 def _section_name(metadata: dict[str, str]) -> str:
     titles = [metadata.get(f"header_{level}") for level in range(1, 5)]
     return " > ".join(title for title in titles if title) or "documento"
@@ -54,6 +75,7 @@ def load_markdown_file(
         separators=["\n\n", "\n", ". ", " ", ""],
     )
     doc_type, sensitivity = _classification(path)
+    module = _module_from_path(path)
     sections = header_splitter.split_text(text)
     documents: list[Document] = []
 
@@ -69,6 +91,7 @@ def load_markdown_file(
                 sensitivity=sensitivity,
                 section=section_name,
                 section_index=section_index,
+                module=module,
             )
             documents.append(Document(page_content=content, metadata=metadata))
 

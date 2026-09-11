@@ -1,0 +1,490 @@
+{
+  "generated_at": "2026-09-10T00:21:33.100468+00:00",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "retrieval_k": 5,
+  "total_questions": 13,
+  "results": [
+    {
+      "id": "Q01",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quais são os produtos oferecidos pela empresa VendeFácil?",
+      "expected_sources": [
+        "data/structured/products.json"
+      ],
+      "expected_metadata": {
+        "doc_type": "structured",
+        "format": "json"
+      },
+      "ground_truth_answer": "A VendeFácil oferece 5 produtos principais: 1) VendeFácil PDV (ponto de venda e frente de caixa); 2) VendeFácil Estoque (gestão de inventário e suprimentos); 3) VendeFácil Loja (e-commerce e catálogo digital); 4) VendeFácil Analytics (inteligência de negócios e DRE); 5) VendeFácil Pay (meios de pagamento e TEF).",
+      "key_points_for_evaluation": [
+        "Mencionar os 5 produtos principais",
+        "Breve descrição de cada produto"
+      ],
+      "retrieved_sources": [
+        "customer_006_duvida_inventario_cego.txt",
+        "products.json",
+        "sales.csv"
+      ],
+      "answer": "A VendeFácil oferece cinco produtos principais:\n1. **VendeFácil PDV** – sistema de ponto de venda com emissão de NFC‑e/SAT, funcionamento offline e controle de caixa.\n2. **VendeFácil Analytics** – dashboard de inteligência de negócios com DRE gerencial, projeção de fluxo de caixa e métricas de vendas.\n3. **VendeFácil Loja** – plataforma omnicanal de e‑commerce integrada ao estoque físico, com suporte a WhatsApp Commerce e marketplaces.\n4. **VendeFácil Estoque** – módulo de controle avançado de inventário, curva ABC, alertas de ruptura e sincronização em tempo real entre filiais.\n5. **VendeFácil Pay** – solução de pagamento integrada ao PDV, com TEF, PIX dinâmico e conciliação automática de vendas.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "O contexto recuperado contém registros de cada produto com seus nomes e descrições, permitindo listar os cinco produtos oferecidos. Cada item foi extraído de um chunk distinto do arquivo products.json.",
+      "sources_used": [
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PDV-1",
+          "quotation": "product_id: PROD-PDV, name: VendeFácil PDV, category: Ponto de Venda & Frente de Caixa, description: Sistema completo para frente de caixa com emissão rápida de NFC-e/SAT, sangria, suporte offline e controle de caixa por operador.",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ANALYTICS-4",
+          "quotation": "product_id: PROD-ANALYTICS, name: VendeFácil Analytics, category: Inteligência de Negócios e Gestão Financeira, description: Dashboard executivo com DRE gerencial, fluxo de caixa projetado, margem de contribuição por produto e métricas de vendas por vendedor.",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-LOJA-3",
+          "quotation": "product_id: PROD-LOJA, name: VendeFácil Loja, category: E-commerce e Catálogo Digital, description: Plataforma de e-commerce omnicanal integrada nativamente ao estoque e PDV físico, com suporte a WhatsApp Commerce e marketplaces.",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-ESTOQUE-2",
+          "quotation": "product_id: PROD-ESTOQUE, name: VendeFácil Estoque, category: Gestão de Inventário e Suprimentos, description: Módulo de controle avançado de estoque, curva ABC, inventário por coletor de dados, alertas de ruptura e sincronização em tempo real entre filiais.",
+          "doc_type": "product"
+        },
+        {
+          "filepath": "products.json",
+          "chunk_id": "products-PROD-PAY-5",
+          "quotation": "product_id: PROD-PAY, name: VendeFácil Pay, category: Meios de Pagamento e TEF, description: Solução de pagamento integrada ao PDV com suporte a TEF, PIX Dinâmico com confirmação instantânea no caixa e conciliação de cartões.",
+          "doc_type": "product"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q02",
+      "category": "Fácil (RAG Básico)",
+      "question": "Quem é o responsável técnico (Tech Lead) e a gerente de produto (PM) do VendeFácil Estoque?",
+      "expected_sources": [
+        "data/structured/products.json",
+        "data/structured/employees.csv"
+      ],
+      "expected_metadata": {
+        "module": "estoque"
+      },
+      "ground_truth_answer": "O Tech Lead (responsável técnico) do VendeFácil Estoque é Carlos Mendes e a Product Manager (PM) responsável é Ana Souza.",
+      "key_points_for_evaluation": [
+        "Tech Lead: Carlos Mendes",
+        "PM: Ana Souza"
+      ],
+      "retrieved_sources": [
+        "codigo_de_conduta.md",
+        "customers.csv",
+        "importacao_nfe_xml.md",
+        "inventario.md",
+        "seguranca_lgpd.pdf",
+        "sincronizacao_estoque.md",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "O LLM nao gerou uma RAGResponse valida em 3 tentativa(s). tentativa 1: EvidenceValidationError: Recusa por SEM_EVIDENCIA invalida: 8 chunk(s) foram recuperados e enviados no contexto. Responda com o que estiver sustentado nas fontes, ajustando confidence_level se necessario. | tentativa 2: EvidenceValidationError: Recusa por SEM_EVIDENCIA invalida: 8 chunk(s) foram recuperados e enviados no contexto. Responda com o que estiver sustentado nas fontes, ajustando confidence_level se necessario. | tentativa 3: BadRequestError: Error code: 400 - {'error': {'message': \"Parsing failed. The model generated output that could not be parsed. Please adjust your prompt. See 'failed_generation' for more details.\", 'type': 'invalid_request_error', 'code': 'output_parse_failed', 'failed_generation': 'We need to answer: \"Quem é o responsável técnico (Tech Lead) e a gerente de produto (PM) do VendeFácil Estoque?\" We must use only facts from the context. The context includes manuals, tickets, etc. There\\'s no mention of Tech Lead or PM. So we must refuse with SEM_EVIDENCIA. Provide RAGResponse with answer? We must respond with refusal. The schema: answer: string, confidence_level: \"Recusado\", is_refusal: true, reasoning, refusal_reason: \"SEM_EVIDENCIA\", sources_used? Probably none. Must cite at least one source? The instruction: \"Se o contexto recuperado nao contiver a resposta, recuse com refusal_reason=\\'SEM_EVIDENCIA\\'.\" So we refuse. No sources. Provide answer? Probably empty? The schema says answer: string. We can provide maybe \"Não há informação disponível no contexto.\" But answer must be factual. We\\'ll give a short answer. Provide confidence_level \"Recusado\". is_refusal true. Provide reasoning. Provide refusal_reason \"SEM_EVIDENCIA\". No sources. That should satisfy.'}}"
+    },
+    {
+      "id": "Q03",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é o prazo de arrependimento para reembolso integral de 100% no cancelamento de planos da VendeFácil?",
+      "expected_sources": [
+        "data/unstructured/policies/reembolso.pdf",
+        "data/unstructured/policies/reembolso.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "topic": "reembolso"
+      },
+      "ground_truth_answer": "O prazo para reembolso integral de 100% do valor pago é de até 7 dias corridos após a contratação inicial, conforme o Código de Defesa do Consumidor e a Política de Reembolso da empresa.",
+      "key_points_for_evaluation": [
+        "Prazo de 7 dias corridos",
+        "Reembolso integral de 100%"
+      ],
+      "retrieved_sources": [
+        "customer_002_reembolso_cancelamento.txt",
+        "customer_017_cancelamento_plano_basic.txt",
+        "reembolso.md",
+        "reembolso.pdf"
+      ],
+      "answer": "O prazo de arrependimento para reembolso integral de 100% no cancelamento de planos da VendeFácil é de 7 dias corridos a partir da contratação inicial.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "A política de reembolso da VendeFácil estabelece que novos assinantes têm direito ao reembolso integral em até 7 dias corridos após a contratação inicial, conforme citado nas seções 1.2 dos documentos de política.",
+      "sources_used": [
+        {
+          "filepath": "reembolso.md",
+          "chunk_id": "md-reembolso-secao-2-parte-1",
+          "quotation": "1.2. **Direito de Arrependimento (7 dias):** Conforme o Código de Defesa do Consumidor, novos assinantes têm direito ao reembolso integral de 100% dos valores pagos caso a solicitação seja efetuada em até 7 dias corridos após a contratação inicial.",
+          "doc_type": "policy"
+        },
+        {
+          "filepath": "reembolso.pdf",
+          "chunk_id": "pdf-reembolso-pagina-1-parte-1",
+          "quotation": "1.2. Direito de Arrependimento (7 dias): Conforme o Código de Defesa do Consumidor, novos assinantes têm direito ao reembolso integral de 100% dos valores pagos caso a solicitação seja efetuada em até 7 dias corridos após a contratação inicial.",
+          "doc_type": "policy"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q04",
+      "category": "Fácil (RAG Básico)",
+      "question": "Qual é a política de home office para os funcionários da equipe de Engenharia?",
+      "expected_sources": [
+        "data/unstructured/policies/home_office.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "policy",
+        "department": "engenharia"
+      },
+      "ground_truth_answer": "A equipe de Engenharia funciona no modelo Remoto First (100% Home Office), com encontros presenciais trimestrais na matriz da empresa.",
+      "key_points_for_evaluation": [
+        "Modelo Remoto First / 100% Home Office",
+        "Encontros presenciais trimestrais"
+      ],
+      "retrieved_sources": [
+        "employees.csv",
+        "home_office.md"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "O LLM nao gerou uma RAGResponse valida em 3 tentativa(s). tentativa 1: BadRequestError: Error code: 400 - {'error': {'message': 'Tool call validation failed: tool call validation failed: parameters for tool RAGResponse did not match schema: errors: [`/answer`: length must be >= 1, but got 0]', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '{\"name\": \"RAGResponse\", \"arguments\": {\\n  \"answer\": \"\",\\n  \"confidence_level\": \"Recusado\",\\n  \"is_refusal\": true,\\n  \"reasoning\": \"O contexto recuperado contém apenas a seção de cabeçalho da política de home office e registros de funcionários, mas não inclui detalhes sobre a política de home office específica para a equipe de Engenharia.\",\\n  \"refusal_reason\": \"SEM_EVIDENCIA\",\\n  \"sources_used\": []\\n}}'}} | tentativa 2: EvidenceValidationError: Recusa por SEM_EVIDENCIA invalida: 8 chunk(s) foram recuperados e enviados no contexto. Responda com o que estiver sustentado nas fontes, ajustando confidence_level se necessario. | tentativa 3: OutputParserException: Unknown tool type: 'functions.RAGResponse'. Available tools: RAGResponse\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE "
+    },
+    {
+      "id": "Q05",
+      "category": "Filtragem por Metadados",
+      "question": "Quais tickets de suporte foram abertos por clientes do estado de Minas Gerais (MG) para o módulo de estoque?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl"
+      ],
+      "expected_metadata": {
+        "state": "MG",
+        "module": "estoque"
+      },
+      "ground_truth_answer": "Foram abertos 3 tickets em Minas Gerais (MG) para o módulo de estoque: 1) TCK-1001 (Supermercado Boa Compra - Erro na sincronização entre matriz e filial Savassi); 2) TCK-1002 (Drogaria Vida & Saúde - Divergência na contagem de lote no inventário cego); 3) TCK-1004 (Materiais de Construção Silva - Lentidão ao importar XML de NF-e com mais de 200 itens).",
+      "key_points_for_evaluation": [
+        "Identificar os tickets TCK-1001, TCK-1002 e TCK-1004",
+        "Confirmar que são do estado de MG e do módulo de estoque"
+      ],
+      "retrieved_sources": [
+        "tickets.jsonl"
+      ],
+      "answer": "Os tickets de suporte abertos por clientes do estado de Minas Gerais (MG) para o módulo de estoque são:\n\n- **TCK-1006** – \"Alerta de estoque mínimo não envia notificação por e-mail\"\n- **TCK-1001** – \"Erro na sincronização de estoque entre matriz e filial Savassi\"\n- **TCK-1002** – \"Divergência na contagem de lote de medicamentos no inventário cego\"\n- **TCK-1004** – \"Lentidão ao importar XML de NF‑e com mais de 200 itens\"",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "Identifiquei nos registros de tickets todos os que têm Estado = MG e Módulo = estoque. Cada ticket corresponde a um chunk no arquivo tickets.jsonl, que foi usado como fonte.",
+      "sources_used": [
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1006",
+          "quotation": "Estado: MG\nMódulo: estoque\nTítulo: Alerta de estoque mínimo não envia notificação por e-mail",
+          "doc_type": "ticket"
+        },
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1001",
+          "quotation": "Estado: MG\nMódulo: estoque\nTítulo: Erro na sincronização de estoque entre matriz e filial Savassi",
+          "doc_type": "ticket"
+        },
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1002",
+          "quotation": "Estado: MG\nMódulo: estoque\nTítulo: Divergência na contagem de lote de medicamentos no inventário cego",
+          "doc_type": "ticket"
+        },
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1004",
+          "quotation": "Estado: MG\nMódulo: estoque\nTítulo: Lentidão ao importar XML de NF-e com mais de 200 itens",
+          "doc_type": "ticket"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q06",
+      "category": "Filtragem por Metadados",
+      "question": "Quais chamados com prioridade 'Crítica' foram registrados no sistema e qual é o SLA de solução para esse nível?",
+      "expected_sources": [
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/policies/atendimento_sla.md"
+      ],
+      "expected_metadata": {
+        "priority": "Crítica"
+      },
+      "ground_truth_answer": "O ticket de prioridade Crítica registrado é o TCK-1005 (Auto Peças Central - Transação de TEF aprovada na maquininha porém não finaliza venda no PDV). O SLA de solução para severidade Crítica é de até 2 horas (com primeira resposta em até 15 minutos).",
+      "key_points_for_evaluation": [
+        "Identificar TCK-1005",
+        "SLA de resposta: 15 minutos",
+        "SLA de solução: 2 horas"
+      ],
+      "retrieved_sources": [
+        "atendimento_sla.md",
+        "reembolso.pdf",
+        "seguranca_lgpd.pdf",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "O LLM nao gerou uma RAGResponse valida em 3 tentativa(s). tentativa 1: BadRequestError: Error code: 400 - {'error': {'message': 'Failed to parse tool call arguments as JSON', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '{\"name\": \"RAGResponse\", \"arguments\": {\"answer\":\"Os chamados com prioridade **Crítica** registrados no sistema são:\\\\n- **TCK‑1067** – Maquininha Pinpad exibe tela azul e mensagem ‘Tamper Detected’ (módulo pay, Estado RS).\\\\n- **TCK‑1015** – Erro 500 no checkout com cartão de crédito (módulo ecommerce, Estado ES).\\\\n- **TCK‑1038** – Gaveta de dinheiro automática não abre (módulo pdv, Estado BA).\\\\n- **TCK‑1027** – Maquininha Pinpad exibe tela azul e mensagem ‘Tamper Detected’ (módulo pay, Estado PE).\\\\n- **TCK‑1035** – Erro 500 no checkout com cartão de crédito (módulo ecommerce, Estado PE).\\\\n\\\\nPara o nível de prioridade **Crítica**, a política de SLA estabelece que a solução deve ser concluída em **no máximo 2 horas** (Plano Pro/Enterprise) após a abertura do chamado.\\\\n\",\"confidence_level\":\"Alta\",\"reasoning\":\"Identifiquei todos os tickets no contexto que têm a marcação ‘Prioridade: Crítica’ e, em seguida, consultei a política de SLA que especifica o tempo máximo de solução para esse nível. Ambos os conjuntos de dados foram usados para compor a resposta.\",\"sources_used\":[{\"chunk_id\":\"tickets-TCK-1067\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1067\\\\nCliente: CUST051\\\\nNome do cliente: Atacado da Paz Comercial\\\\nEstado: RS\\\\nMódulo: pay\\\\nTítulo: Maquininha Pinpad exibe tela azul e mensagem \\'Tamper Detected\\' - Atacado da Paz Comercial\\\\nPrioridade: Crítica\\\\nStatus: Em Andamento\\\\nData de abertura: 2026-01-15T20:18:00Z\\\\nCategoria: Hardware / TEF\"},{\"chunk_id\":\"tickets-TCK-1015\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1015\\\\nCliente: CUST085\\\\nNome do cliente: Rede Cardoso Comercial\\\\nEstado: ES\\\\nMódulo: ecommerce\\\\nTítulo: Erro 500 ao tentar finalizar compra via checkout com cartão de crédito - Rede Cardoso Comercial\\\\nPrioridade: Crítica\\\\nStatus: Em Andamento\\\\nData de abertura: 2026-02-03T13:47:00Z\\\\nCategoria: Pagamento / API\"},{\"chunk_id\":\"tickets-TCK-1038\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1038\\\\nCliente: CUST182\\\\nNome do cliente: Empório Marques Comercial\\\\nEstado: BA\\\\nMódulo: pdv\\\\nTítulo: Gaveta de dinheiro automática não abre após pagamento em dinheiro - Empório Marques Comercial\\\\nPrioridade: Crítica\\\\nStatus: Aberto\\\\nData de abertura: 2026-02-15T13:54:00Z\\\\nCategoria: Hardware\"},{\"chunk_id\":\"tickets-TCK-1027\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1027\\\\nCliente: CUST173\\\\nNome do cliente: Distribuidora Casa Grande Me\\\\nEstado: PE\\\\nMódulo: pay\\\\nTítulo: Maquininha Pinpad exibe tela azul e mensagem \\'Tamper Detected\\' - Distribuidora Casa Grande Me\\\\nPrioridade: Crítica\\\\nStatus: Resolvido\\\\nData de abertura: 2026-02-03T23:19:00Z\\\\nCategoria: Hardware / TEF\"},{\"chunk_id\":\"tickets-TCK-1035\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1035\\\\nCliente: CUST114\\\\nNome do cliente: Casa do da Mata Ltda\\\\nEstado: PE\\\\nMódulo: ecommerce\\\\nTítulo: Erro 500 ao tentar finalizar compra via checkout com cartão de crédito - Casa do da Mata Ltda\\\\nPrioridade: Crítica\\\\nStatus: Aberto\\\\nData de abertura: 2026-01-29T19:25:00Z\\\\nCategoria: Pagamento / API\"},{\"chunk_id\":\"md-atendimento_sla-secao-2-parte-1\",\"doc_type\":\"policy\",\"filepath\":\"atendimento_sla.md\",\"quotation\":\"| **Crítica** | Sistema PDV fora do ar em todos os caixas, paralisação total de vendas ou queda do TEF Pay sem contingência. | **15 minutos** | **2 horas**\"}]\"}'}} | tentativa 2: BadRequestError: Error code: 400 - {'error': {'message': 'Failed to parse tool call arguments as JSON', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '{\"name\": \"RAGResponse\", \"arguments\": {\"answer\":\"Os chamados com prioridade **Crítica** registrados no sistema são:\\\\\\\\n- **TCK‑1067** – Maquininha Pinpad exibe tela azul e mensagem ‘Tamper Detected’ (módulo pay, Estado RS).\\\\\\\\n- **TCK‑1015** – Erro 500 no checkout com cartão de crédito (módulo ecommerce, Estado ES).\\\\\\\\n- **TCK‑1038** – Gaveta de dinheiro automática não abre (módulo pdv, Estado BA).\\\\\\\\n- **TCK‑1027** – Maquininha Pinpad exibe tela azul e mensagem ‘Tamper Detected’ (módulo pay, Estado PE).\\\\\\\\n- **TCK‑1035** – Erro 500 no checkout com cartão de crédito (módulo ecommerce, Estado PE).\\\\\\\\n\\\\\\\\nPara o nível de prioridade **Crítica**, a política de SLA estabelece que a solução deve ser concluída em **no máximo 2 horas** (Plano Pro/Enterprise) após a abertura do chamado.\",\"confidence_level\":\"Alta\",\"reasoning\":\"Identifiquei todos os tickets no contexto que têm a marcação ‘Prioridade: Crítica’ e, em seguida, consultei a política de SLA que especifica o tempo máximo de solução para esse nível. Ambos os conjuntos de dados foram usados para compor a resposta.\",\"sources_used\":[{\"chunk_id\":\"tickets-TCK-1067\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1067\\\\\\\\nCliente: CUST051\\\\\\\\nNome do cliente: Atacado da Paz Comercial\\\\\\\\nEstado: RS\\\\\\\\nMódulo: pay\\\\\\\\nTítulo: Maquininha Pinpad exibe tela azul e mensagem \\'Tamper Detected\\' - Atacado da Paz Comercial\\\\\\\\nPrioridade: Crítica\\\\\\\\nStatus: Em Andamento\\\\\\\\nData de abertura: 2026-01-15T20:18:00Z\\\\\\\\nCategoria: Hardware / TEF\"},{\"chunk_id\":\"tickets-TCK-1015\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1015\\\\\\\\nCliente: CUST085\\\\\\\\nNome do cliente: Rede Cardoso Comercial\\\\\\\\nEstado: ES\\\\\\\\nMódulo: ecommerce\\\\\\\\nTítulo: Erro 500 ao tentar finalizar compra via checkout com cartão de crédito - Rede Cardoso Comercial\\\\\\\\nPrioridade: Crítica\\\\\\\\nStatus: Em Andamento\\\\\\\\nData de abertura: 2026-02-03T13:47:00Z\\\\\\\\nCategoria: Pagamento / API\"},{\"chunk_id\":\"tickets-TCK-1038\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1038\\\\\\\\nCliente: CUST182\\\\\\\\nNome do cliente: Empório Marques Comercial\\\\\\\\nEstado: BA\\\\\\\\nMódulo: pdv\\\\\\\\nTítulo: Gaveta de dinheiro automática não abre após pagamento em dinheiro - Empório Marques Comercial\\\\\\\\nPrioridade: Crítica\\\\\\\\nStatus: Aberto\\\\\\\\nData de abertura: 2026-02-15T13:54:00Z\\\\\\\\nCategoria: Hardware\"},{\"chunk_id\":\"tickets-TCK-1027\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1027\\\\\\\\nCliente: CUST173\\\\\\\\nNome do cliente: Distribuidora Casa Grande Me\\\\\\\\nEstado: PE\\\\\\\\nMódulo: pay\\\\\\\\nTítulo: Maquininha Pinpad exibe tela azul e mensagem \\'Tamper Detected\\' - Distribuidora Casa Grande Me\\\\\\\\nPrioridade: Crítica\\\\\\\\nStatus: Resolvido\\\\\\\\nData de abertura: 2026-02-03T23:19:00Z\\\\\\\\nCategoria: Hardware / TEF\"},{\"chunk_id\":\"tickets-TCK-1035\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1035\\\\\\\\nCliente: CUST114\\\\\\\\nNome do cliente: Casa do da Mata Ltda\\\\\\\\nEstado: PE\\\\\\\\nMódulo: ecommerce\\\\\\\\nTítulo: Erro 500 ao tentar finalizar compra via checkout com cartão de crédito - Casa do da Mata Ltda\\\\\\\\nPrioridade: Crítica\\\\\\\\nStatus: Aberto\\\\\\\\nData de abertura: 2026-01-29T19:25:00Z\\\\\\\\nCategoria: Pagamento / API\"},{\"chunk_id\":\"md-atendimento_sla-secao-2-parte-1\",\"doc_type\":\"policy\",\"filepath\":\"atendimento_sla.md\",\"quotation\":\"| **Crítica** | Sistema PDV fora do ar em todos os caixas, paralisação total de vendas ou queda do TEF Pay sem contingência. | **15 minutos** | **2 horas**\"}]}}\"}'}} | tentativa 3: BadRequestError: Error code: 400 - {'error': {'message': 'Failed to parse tool call arguments as JSON', 'type': 'invalid_request_error', 'code': 'tool_use_failed', 'failed_generation': '{\"name\": \"RAGResponse\", \"arguments\": {\"answer\":\"Os chamados com prioridade **Crítica** registrados no sistema são:\\\\n- **TCK‑1067** – Maquininha Pinpad exibe tela azul e mensagem ‘Tamper Detected’ (módulo pay, Estado RS).\\\\n- **TCK‑1015** – Erro 500 no checkout com cartão de crédito (módulo ecommerce, Estado ES).\\\\n- **TCK‑1038** – Gaveta de dinheiro automática não abre (módulo pdv, Estado BA).\\\\n- **TCK‑1027** – Maquininha Pinpad exibe tela azul e mensagem ‘Tamper Detected’ (módulo pay, Estado PE).\\\\n- **TCK‑1035** – Erro 500 no checkout com cartão de crédito (módulo ecommerce, Estado PE).\\\\n\\\\nPara o nível de prioridade **Crítica**, a política de SLA estabelece que a solução deve ser concluída em **no máximo 2 horas** (Plano Pro/Enterprise) após a abertura do chamado.\",\"confidence_level\":\"Alta\",\"reasoning\":\"Identifiquei todos os tickets no contexto que têm a marcação ‘Prioridade: Crítica’ e, em seguida, consultei a política de SLA que especifica o tempo máximo de solução para esse nível. Ambos os conjuntos de dados foram usados para compor a resposta.\",\"sources_used\":[{\"chunk_id\":\"tickets-TCK-1067\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1067\\\\nCliente: CUST051\\\\nNome do cliente: Atacado da Paz Comercial\\\\nEstado: RS\\\\nMódulo: pay\\\\nTítulo: Maquininha Pinpad exibe tela azul e mensagem \\'Tamper Detected\\' - Atacado da Paz Comercial\\\\nPrioridade: Crítica\\\\nStatus: Em Andamento\\\\nData de abertura: 2026-01-15T20:18:00Z\\\\nCategoria: Hardware / TEF\"},{\"chunk_id\":\"tickets-TCK-1015\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1015\\\\nCliente: CUST085\\\\nNome do cliente: Rede Cardoso Comercial\\\\nEstado: ES\\\\nMódulo: ecommerce\\\\nTítulo: Erro 500 ao tentar finalizar compra via checkout com cartão de crédito - Rede Cardoso Comercial\\\\nPrioridade: Crítica\\\\nStatus: Em Andamento\\\\nData de abertura: 2026-02-03T13:47:00Z\\\\nCategoria: Pagamento / API\"},{\"chunk_id\":\"tickets-TCK-1038\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1038\\\\nCliente: CUST182\\\\nNome do cliente: Empório Marques Comercial\\\\nEstado: BA\\\\nMódulo: pdv\\\\nTítulo: Gaveta de dinheiro automática não abre após pagamento em dinheiro - Empório Marques Comercial\\\\nPrioridade: Crítica\\\\nStatus: Aberto\\\\nData de abertura: 2026-02-15T13:54:00Z\\\\nCategoria: Hardware\"},{\"chunk_id\":\"tickets-TCK-1027\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1027\\\\nCliente: CUST173\\\\nNome do cliente: Distribuidora Casa Grande Me\\\\nEstado: PE\\\\nMódulo: pay\\\\nTítulo: Maquininha Pinpad exibe tela azul e mensagem \\'Tamper Detected\\' - Distribuidora Casa Grande Me\\\\nPrioridade: Crítica\\\\nStatus: Resolvido\\\\nData de abertura: 2026-02-03T23:19:00Z\\\\nCategoria: Hardware / TEF\"},{\"chunk_id\":\"tickets-TCK-1035\",\"doc_type\":\"ticket\",\"filepath\":\"tickets.jsonl\",\"quotation\":\"Ticket: TCK-1035\\\\nCliente: CUST114\\\\nNome do cliente: Casa do da Mata Ltd\"}'}}"
+    },
+    {
+      "id": "Q07",
+      "category": "Filtragem por Metadados",
+      "question": "Listar os logs de erro registrados para o cliente 'CUST008' (Auto Peças Central) no serviço de pagamento (pay).",
+      "expected_sources": [
+        "data/semi_structured/system_logs.csv"
+      ],
+      "expected_metadata": {
+        "customer_id": "CUST008",
+        "module": "pay"
+      },
+      "ground_truth_answer": "Os logs para o cliente CUST008 no serviço vendefacil-pay são: 1) TEF_TIMEOUT (Erro PAY-504) - Timeout aguardando resposta do Pinpad IP 192.168.1.105 na porta 6090; 2) TEF_RETRY_FAILED (Erro PAY-502) - Conexão recusada pelo Windows Firewall no host AutoPecas-Caixa01.",
+      "key_points_for_evaluation": [
+        "Identificar os códigos PAY-504 e PAY-502",
+        "Mencionar o problema de firewall na porta 6090"
+      ],
+      "retrieved_sources": [
+        "system_logs.csv",
+        "tickets.jsonl"
+      ],
+      "answer": "Log de erro registrado para o cliente CUST008 (Auto Peças Central) no serviço de pagamento (pay):\n• 2026-02-14 10:04:12 – Nível: ERROR – Evento: TEF_TIMEOUT – Código de erro: PAY-504 – Mensagem: \"Timeout waiting response from Pinpad IP 192.168.1.105 on port 6090. Transaction aborted by local agent.\"",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "Identifiquei nos registros do arquivo system_logs.csv apenas um log de nível ERROR que corresponde ao cliente CUST008, ao serviço vendefacil-pay e ao módulo pay. Esse log contém as informações solicitadas: data, nível, evento, código de erro e mensagem. Não há outros logs de nível ERROR para esse cliente e serviço na amostra fornecida.",
+      "sources_used": [
+        {
+          "filepath": "system_logs.csv",
+          "chunk_id": "log-system_logs-2026-02-14 10:04:12-285",
+          "quotation": "Log registrado em 2026-02-14 10:04:12. Nível: ERROR. Serviço: vendefacil-pay. Módulo: pay. Cliente: CUST008. Evento: TEF_TIMEOUT. Código de erro: PAY-504. Mensagem: Timeout waiting response from Pinpad IP 192.168.1.105 on port 6090. Transaction aborted by local agent.",
+          "doc_type": "log"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q08",
+      "category": "Múltiplas Fontes (Multi-hop)",
+      "question": "O cliente Supermercado Boa Compra está reclamando de falha de sincronização. Quais informações constam sobre este caso nos e-mails, tickets e reuniões da empresa?",
+      "expected_sources": [
+        "data/unstructured/emails/customer_001_sincronizacao.txt",
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/meetings/2026-01-product_roadmap.md",
+        "data/unstructured/meetings/2026-03-sales_enterprise_feedback.md"
+      ],
+      "expected_metadata": {
+        "customer_id": "CUST001"
+      },
+      "ground_truth_answer": "O Supermercado Boa Compra (CUST001 / MG) enfrenta atraso na sincronização de estoque de hortifruti e mercadorias entre a Matriz em BH e a filial Savassi. No e-mail e no ticket TCK-1001, a gerência cobra a solução. Na reunião de roadmap de Jan/2026, Carlos Mendes ficou de propor uma solução para o lock do banco. Na reunião de vendas de Mar/2026, alertou-se que o cliente pode cancelar o contrato Enterprise se o problema não for sanado no trimestre.",
+      "key_points_for_evaluation": [
+        "Conectar e-mail customer_001 com ticket TCK-1001",
+        "Relacionar com as atas de reunião de Jan/2026 e Mar/2026",
+        "Mencionar o risco de cancelamento do contrato Enterprise"
+      ],
+      "retrieved_sources": [
+        "2026-03-sales_enterprise_feedback.md",
+        "customers.csv",
+        "tickets.jsonl"
+      ],
+      "answer": "No e‑mails há nenhuma referência ao caso do Supermercado Boa Compra. No sistema de tickets, o chamado **TCK‑1001** registra que o cliente relatou um *erro na sincronização de estoque entre a matriz em Belo Horizonte e a filial Savassi* – as entradas de notas fiscais feitas na matriz não aparecem no saldo da filial, ficando zerado até o reinício do serviço (status aberto, prioridade alta).  Em reunião de acompanhamento (ata de 2026‑03), o cliente exigiu *prioridade máxima* para corrigir os atrasos de sincronização de hortifruti entre a matriz e a filial, alertando que o contrato Enterprise poderia ser cancelado se o problema não fosse resolvido neste trimestre.\n\nEssas são as únicas informações recuperadas sobre o caso nas fontes disponíveis.",
+      "confidence_level": "Alta",
+      "is_refusal": false,
+      "refusal_reason": null,
+      "reasoning": "Os documentos recuperados contêm apenas um ticket (TCK‑1001) e uma ata que menciona o mesmo cliente e o mesmo problema de sincronização. Não há e‑mails no contexto fornecido.",
+      "sources_used": [
+        {
+          "filepath": "tickets.jsonl",
+          "chunk_id": "tickets-TCK-1001",
+          "quotation": "Ticket: TCK-1001\nCliente: CUST001\nNome do cliente: Supermercado Boa Compra\nEstado: MG\nMódulo: estoque\nTítulo: Erro na sincronização de estoque entre matriz e filial Savassi\nPrioridade: Alta\nStatus: Aberto\nData de abertura: 2026-02-10T09:30:00Z\nCategoria: Sincronização / API\n\nDescrição: As entradas de notas fiscais realizadas no VendeFácil Estoque na Matriz de BH não estão refletindo no saldo da fi",
+          "doc_type": "ticket"
+        },
+        {
+          "filepath": "2026-03-sales_enterprise_feedback.md",
+          "chunk_id": "md-2026-03-sales_enterprise_feedback-secao-2-parte-1",
+          "quotation": "1. **Supermercado Boa Compra (MG):** Solicita prioridade máxima na correção dos atrasos de sincronização de estoque de hortifruti entre a Matriz de BH e a filial Savassi. Alertaram sobre risco de cancelamento do contrato Enterprise se não resolvido neste trimestre.",
+          "doc_type": "ata"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "Q09",
+      "category": "Múltiplas Fontes (Multi-hop)",
+      "question": "A cliente Ótica Visão Clara pediu cancelamento de contrato. Analise o e-mail enviado e determine se ela tem direito ao reembolso de acordo com a política da empresa.",
+      "expected_sources": [
+        "data/unstructured/emails/customer_002_reembolso_cancelamento.txt",
+        "data/unstructured/policies/reembolso.pdf",
+        "data/structured/customers.csv"
+      ],
+      "expected_metadata": {
+        "customer_id": "CUST0010"
+      },
+      "ground_truth_answer": "Sim, a cliente tem direito ao reembolso integral de 100%. No e-mail (customer_002), a Ótica Visão Clara solicita o cancelamento 5 dias após a contratação (contratou em 15/01/2026 e solicitou em 20/01/2026). Como a Política de Reembolso concede 7 dias de arrependimento com devolução total, o pedido está dentro do prazo legal.",
+      "key_points_for_evaluation": [
+        "Identificar o e-mail da Ótica Visão Clara",
+        "Verificar que se passaram 5 dias (dentro do prazo de 7 dias)",
+        "Concluir que a cliente tem direito ao reembolso integral"
+      ],
+      "retrieved_sources": [
+        "customer_002_reembolso_cancelamento.txt",
+        "customers.csv",
+        "reembolso.md",
+        "reembolso.pdf"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199293, Requested 3172. Please try again in 17m44.879999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q10",
+      "category": "Múltiplas Fontes (Multi-hop)",
+      "question": "Qual cliente possui a maior receita recorrente mensal (MRR) no estado de São Paulo e qual produto ele utiliza prioritariamente?",
+      "expected_sources": [
+        "data/structured/customers.csv"
+      ],
+      "expected_metadata": {
+        "state": "SP"
+      },
+      "ground_truth_answer": "O cliente em São Paulo (SP) com a maior receita mensal é a Auto Peças Central (CUST008), com MRR de R$ 3.100,00, cujo produto principal é o VendeFácil Pay.",
+      "key_points_for_evaluation": [
+        "Identificar Auto Peças Central em SP",
+        "Mencionar o MRR de R$ 3.100,00",
+        "Mencionar o produto VendeFácil Pay"
+      ],
+      "retrieved_sources": [
+        "2026-03-q1_results_exec_review.md",
+        "customers.csv"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198936, Requested 2634. Please try again in 11m18.239999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q11",
+      "category": "Razão & Solução de Problemas",
+      "question": "Por que o PDV exibe a mensagem 'Timeout de confirmação TEF' no cliente Auto Peças Central e qual é o procedimento técnico de solução?",
+      "expected_sources": [
+        "data/unstructured/documentation/pay/tef_e_maquininhas.md",
+        "data/semi_structured/tickets.jsonl",
+        "data/unstructured/meetings/2026-02-engineering_outage_retrospective.md"
+      ],
+      "expected_metadata": {
+        "module": "pay"
+      },
+      "ground_truth_answer": "A mensagem 'Timeout de confirmação TEF' ocorre quando o firewall local do computador do caixa (Windows Firewall) bloqueia as conexões de entrada na porta TCP 6090. A solução técnica consiste em adicionar uma regra de exceção no firewall do sistema operacional liberando o tráfego de entrada na porta TCP 6090.",
+      "key_points_for_evaluation": [
+        "Identificar o bloqueio no Windows Firewall",
+        "Mencionar especificamente a porta TCP 6090",
+        "Explicar a liberação de exceção no firewall"
+      ],
+      "retrieved_sources": [
+        "manual_pdv.md",
+        "system_logs.csv",
+        "tickets.jsonl",
+        "troca_e_devolucao.md"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198579, Requested 2547. Please try again in 8m6.431999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q12",
+      "category": "Razão & Solução de Problemas",
+      "question": "Quais foram as decisões aprovadas na reunião de retrospectiva do incidente de queda do TEF de Fevereiro de 2026?",
+      "expected_sources": [
+        "data/unstructured/meetings/2026-02-engineering_outage_retrospective.md"
+      ],
+      "expected_metadata": {
+        "doc_type": "meeting"
+      },
+      "ground_truth_answer": "Na reunião de retrospectiva, foram aprovadas 3 ações: 1) Lançamento da release v2.8.2 para fechar sockets ociosos no agente TEF (Igor Oliveira); 2) Atualização do manual do VendeFácil Pay destacando a liberação obrigatória da porta TCP 6090 (Diego Alves); 3) Desenvolvimento do botão de diagnóstico 'Testar Conexão TEF e Porta 6090' no PDV (Beatriz Lima).",
+      "key_points_for_evaluation": [
+        "Mencionar a release v2.8.2 de correção",
+        "Mencionar a atualização da documentação da porta TCP 6090",
+        "Mencionar a criação do botão de teste no PDV"
+      ],
+      "retrieved_sources": [
+        "2026-02-engineering_outage_retrospective.md",
+        "2026-03-q1_results_exec_review.md",
+        "reembolso.md",
+        "system_logs.csv",
+        "tef_e_maquininhas.md",
+        "tickets.jsonl"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 198222, Requested 2226. Please try again in 3m13.535999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    },
+    {
+      "id": "Q13",
+      "category": "Razão & Solução de Problemas",
+      "question": "Como proceder quando houver erro 'Conflict during inventory sync' (STK-409) entre lojas no módulo VendeFácil Estoque?",
+      "expected_sources": [
+        "data/unstructured/documentation/estoque/sincronizacao_estoque.md"
+      ],
+      "expected_metadata": {
+        "module": "estoque"
+      },
+      "ground_truth_answer": "O erro STK-409 ocorre devido a um table lock temporário no banco distribuído. O procedimento é: 1) Verificar no menu 'Configurações -> Rede -> Status da Sincronização' se há pacotes pendentes; 2) Clicar em 'Forçar Reconciliação de Estoque'; 3) Se o erro persistir por mais de 15 minutos, reiniciar o serviço 'vendefacil-estoque-agent' no servidor local da loja ou forçar um sync cego via terminal.",
+      "key_points_for_evaluation": [
+        "Explicar a causa (table lock)",
+        "Passo 1: Forçar Reconciliação de Estoque no painel",
+        "Passo 2: Reiniciar o agente local vendefacil-estoque-agent se persistir"
+      ],
+      "retrieved_sources": [
+        "2026-03-sales_enterprise_feedback.md",
+        "sincronizacao_estoque.md",
+        "system_logs.csv"
+      ],
+      "answer": null,
+      "confidence_level": null,
+      "is_refusal": null,
+      "refusal_reason": null,
+      "reasoning": null,
+      "sources_used": [],
+      "error": "Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kz4m730ae0080wgv0e78gcdx` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197864, Requested 2552. Please try again in 2m59.712s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}"
+    }
+  ]
+}
