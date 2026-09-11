@@ -4,11 +4,13 @@ langchain-text-splitters
 langchain-huggingface
 langchain-anthropic
 langchain-groq
+langchain-openai
 faiss-cpu
 pydantic
 pypdf
 rank-bm25
 python-dotenv
 sentence-transformers
+streamlit
 pytest
 
