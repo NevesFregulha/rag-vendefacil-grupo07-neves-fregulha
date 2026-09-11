@@ -46,6 +46,10 @@ def _contains_any(normalized_text: str, keywords: Iterable[str]) -> bool:
     )
 
 
+def _matches_any(normalized_text: str, patterns: Iterable[str]) -> bool:
+    return any(re.search(pattern, normalized_text) for pattern in patterns)
+
+
 # Pedidos de credenciais/dados financeiros sensíveis (política item 1.2 e 1.4).
 CREDENTIAL_KEYWORDS = (
     "senha",
@@ -65,6 +69,19 @@ CREDENTIAL_KEYWORDS = (
     "dados bancarios",
     "conta bancaria",
     "conta corrente",
+)
+
+# Alguns pedidos de credencial nao casam por palavra-chave fixa porque admitem
+# adjetivos no meio ("chave SECRETA de API de Producao"). Estes padroes cobrem
+# essas variacoes sem exigir a frase exata.
+CREDENTIAL_PATTERNS = (
+    r"\bchaves?\s+(?:\w+\s+){0,3}de\s+(?:api|acesso|producao|criptografia)\b",
+    r"\bchaves?\s+(?:secreta|privada|publica)s?\b",
+    r"\bsegredos?\s+(?:jwt|de\s+\w+)\b",
+    r"\bjwt\b",
+    r"\bapi[_\s-]?key\b",
+    r"\bsecret\s+key\b",
+    r"\bcredencia(?:l|is)\b",
 )
 
 # Dados pessoais confidenciais de colaboradores/clientes (política item 1.3 e 1.4).
@@ -120,8 +137,18 @@ DOMAIN_KEYWORDS = (
     "nfe",
     "funcionario",
     "funcionarios",
+    "funcionaria",
+    "funcionarias",
     "colaborador",
     "colaboradores",
+    "colaboradora",
+    "colaboradoras",
+    "gerente",
+    "gerentes",
+    "diretor",
+    "diretora",
+    "vendedor",
+    "vendedora",
     "equipe",
     "equipes",
     "suporte",
@@ -171,7 +198,9 @@ def is_out_of_scope(question: str) -> bool:
 def classify_restricted_request(question: str) -> RefusalReason | None:
     """Detecta se a própria pergunta solicita dado protegido pela política de LGPD."""
     normalized = _normalize(question)
-    if _contains_any(normalized, CREDENTIAL_KEYWORDS):
+    if _contains_any(normalized, CREDENTIAL_KEYWORDS) or _matches_any(
+        normalized, CREDENTIAL_PATTERNS
+    ):
         return "CREDENTIAL_PROTECTION"
     if _contains_any(normalized, LGPD_KEYWORDS):
         return "LGPD_PROTECTION"
@@ -197,19 +226,24 @@ def decide_policy(
     if not question or not question.strip():
         raise ValueError("Pergunta vazia.")
 
-    if is_out_of_scope(question):
-        return PolicyDecision(
-            "recusar",
-            "OUT_OF_DOMAIN",
-            "Pergunta não relacionada a nenhum tema do domínio VendeFácil.",
-        )
-
+    # A checagem de dado protegido vem ANTES da de escopo: um pedido de senha,
+    # chave de API ou salário é um pedido de dado protegido mesmo que nenhuma
+    # palavra do domínio apareça na pergunta. Na ordem inversa, uma lacuna do
+    # vocabulário rebaixava a recusa para OUT_OF_DOMAIN e escondia o motivo real
+    # (ex.: "Qual a chave secreta de API de Produção da Stripe?").
     restricted_reason = classify_restricted_request(question)
     if restricted_reason is not None:
         return PolicyDecision(
             "recusar",
             restricted_reason,
             "Pergunta solicita diretamente dado protegido pela política de LGPD.",
+        )
+
+    if is_out_of_scope(question):
+        return PolicyDecision(
+            "recusar",
+            "OUT_OF_DOMAIN",
+            "Pergunta não relacionada a nenhum tema do domínio VendeFácil.",
         )
 
     if has_restricted_sources(source_metadatas):
@@ -227,13 +261,25 @@ _CARD_PATTERN = re.compile(r"\b(?:\d{4}[ -]?){3}\d{4}\b")
 _CVV_PATTERN = re.compile(r"\bcvv\s*:?\s*\d{3,4}\b", flags=re.IGNORECASE)
 _EMAIL_PATTERN = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
 _PHONE_PATTERN = re.compile(r"\(\d{2}\)\s?\d{4,5}-\d{4}")
+# Salario e dado Nivel 1 (politica item 1.3), mas nao tem formato proprio como
+# CPF ou e-mail: e so um numero. Por isso o padrao exige o rotulo do campo e
+# preserva o rotulo, escondendo apenas o valor. Sem esta regra, uma pergunta
+# legitima que recuperava employees.csv (ex.: home office da Engenharia) enviava
+# os salarios ao LLM, que chegou a copia-los numa citacao.
+_SALARY_PATTERN = re.compile(
+    # O valor aceita "." e "," so ENTRE digitos (16800.0, 12.500,00): uma versao
+    # com [\d.,]* engolia a virgula que separa os campos do registro.
+    r"\b(salary|sal[aá]rio|remunera[cç][aã]o)(\s*[:=]\s*)(?:R\$\s*)?\d+(?:[.,]\d+)*",
+    flags=re.IGNORECASE,
+)
 
 
 def mask_sensitive_text(text: str) -> str:
-    """Ofusca CPF, cartão, CVV, e-mail e telefone presentes em um trecho de texto."""
+    """Ofusca CPF, cartão, CVV, e-mail, telefone e salário presentes em um trecho de texto."""
     masked = _CPF_PATTERN.sub("[CPF_MASCARADO]", text)
     masked = _CARD_PATTERN.sub("[CARTAO_MASCARADO]", masked)
     masked = _CVV_PATTERN.sub("[CVV_MASCARADO]", masked)
     masked = _EMAIL_PATTERN.sub("[EMAIL_MASCARADO]", masked)
     masked = _PHONE_PATTERN.sub("[TELEFONE_MASCARADO]", masked)
+    masked = _SALARY_PATTERN.sub(r"\1\2[SALARIO_MASCARADO]", masked)
     return masked
