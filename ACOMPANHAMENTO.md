@@ -298,4 +298,40 @@ Com a correção, rodei as 24 perguntas de verdade e identifiquei 10 erros, com 
 
 ---
 
+## Encontro 7 - 2026-09-09
+
+**Etapa:** 4 - Dataset, executor do benchmark, RAG Triad e primeira execução real
+
+### Relato individual - Ester da Silva Antonio Nóbrega Neves
+
+A Fernanda não participou deste encontro, então assumi as TASKs restantes da Etapa 4, incluindo a TASK 05 (interface de demonstração), que estava reservada para ela. Parti das pendências registradas em 04/09: o eval/judge_prompt.py ainda não tinha sido executado, o RELATORIO.md não existia e faltava decidir o que fazer com os 10 erros da primeira execução do benchmark (perguntas sem contexto recuperado, citações acima de 400 caracteres, respostas vazias e rate limit). E com isso, finalizando o trabalho.
+
+### Resumo do dia (escrito em conjunto)
+
+**Entregamos hoje:**
+- Interface: app.py em Streamlit, ligado ao pipeline real, com perguntas de exemplo e um painel "Evidências citadas" mostrando arquivo, chunk e trecho.
+- Relatório (TASK 04): RELATORIO.md com taxa de acerto, tabela por categoria, diagnóstico das falhas e a etapa de origem de cada uma, e o que faria com mais 4 horas.
+- eval/score.py: aplica a rubrica do guia (0,5 resposta, 0,3 citação, 0,2 coerência).
+- eval/retrieval_score.py: mede a qualidade da busca sem chamar LLM, de graça e sempre com o mesmo resultado.
+- Juiz mais rápido: avaliação em paralelo (4 por vez) e reaproveitamento das notas de respostas que não mudaram. O tempo caiu de mais de 20 minutos para cerca de 4.
+- Histórico de medições: cada execução passou a ser guardada com data em eval/runs/.
+- OpenRouter como provedor: configurado no config.py, mais o eval/check_providers.py, que testa quais modelos têm cota antes de rodar.
+- Nota falsa de 39,6%: o juiz falhou por cota em 14 das 24 perguntas, e elas contavam como zero. A solução foi o eval/score.py separar "não avaliada" de "zerada".
+- Guardrail com motivo errado: perguntas pedindo credencial saíam como OUT_OF_DOMAIN, porque a checagem de escopo vinha antes. A solução foi inverter a ordem no src/policy.py.
+- Busca voltando vazia: vários filtros combinados eliminavam tudo. A solução foi relaxar os filtros em ordem.
+- Manuais excluídos pelo filtro de módulo: eles não tinham o metadado module. A solução foi propagar o módulo pela pasta de origem e reindexar.
+- OpenRouter com "erro de conexão": na verdade era um conflito do pip-system-certs com a biblioteca da OpenAI. A solução foi um httpx.Client explícito.
+- Medição boa perdida: uma execução sobrescreveu outra. A solução foi o arquivamento em eval/runs/.
+- Primeira medição completa: 58,3%, com CR 0,89, AR 0,45 e GR 0,69.
+- Teste de juiz: outro juiz (OpenRouter) avaliou as mesmas respostas e deu 57,3%, só 1 ponto de diferença.
+- Correção da citação: Q03, Q09 e Q17 eram rejeitadas por diferença de espaçamento; a nota subiu de 58,3% para 71,9% (+2,75 pontos vieram dessa correção).
+- Hipótese refutada: a recusa "por comodidade" foi medida (0 de 3) e revertida. Na verdade, só o chunk de título chegava ao modelo, e na Q21 a resposta não existe no acervo.
+- Salário passando para o LLM: o mascaramento foi corrigido, com 130 testes passando.
+- Cota: a do Groq acabou no meio da medição, que foi completada gerando de novo só a Q22.
+
+**Uso de assistentes de IA:**
+- Utilizei assistência de IA como apoio durante as atividades. As sugestões e os resultados foram revisados e conferidos antes de serem incorporados ao projeto.
+
+---
+
 *TIC em Trilhas · PUC-Rio · Instituto ECOA · MCTI Futuro · Softex*
